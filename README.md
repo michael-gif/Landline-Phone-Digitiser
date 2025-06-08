@@ -4,7 +4,7 @@ This project converts an analog landline phone into usb landline device you can 
 This project targets the Vanguard 4001AR but can be adapted to any landline.
 ![Vanguard 4001AR Landline](https://www.modip.ac.uk/sites/default/files/styles/artefact_carousel_full/public/images/artefacts/000544_1.jpg?itok=sssZS4nU)
 More images [here](https://www.modip.ac.uk/artefact/aibdc-000544).  
-Vanguard user guide [here](http://www.samhallas.co.uk/repository/handbooks/phme_1229.pdf).
+Vanguard user guide [here](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Vanguard%204001AR%20User%20Guide.pdf).
 
 # How the phone lines work (UK)
 In the UK we have BT sockets (British RJ11 variant) in the walls for connecting phones. They come in two types: BT431A (4 wires) and BT631A (6 wires). Learn more about the BT Socket [here](https://en.wikipedia.org/wiki/British_telephone_socket).  
@@ -69,11 +69,11 @@ After abandoning the idea of ringing the phone, I instead went for DTMF detectio
 The DTMF tones from the speaker were too quiet to detect with the ESP32, so I attempted to amplify them.
 
 Failed attempts:
-- TBA820M Audio Amplifier [(datasheet)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+- TBA820M Audio Amplifier [(datasheet)](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Datasheets/TBA820M.PDF)
   - Didn't work because the circuit for this chip has too many components that I don't have. I was able to get some amplification from the chip, but the output was too noisy to use since I couldn't build the full circuit
-- HA17393 Dual Op Amp [(datasheet)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+- HA17393 Dual Op Amp [(datasheet)](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Datasheets/HA17903.PDF)
   - This didn't work because the chip was dead
-- APA3541 Stereo Headphone Driver [(datasheet)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+- APA3541 Stereo Headphone Driver [(datasheet)](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Datasheets/APA3541-1.PDF)
   - This didn't work because the chip is just a pass through for audio and doesn't do any amplification
 
 Successful attempts:
