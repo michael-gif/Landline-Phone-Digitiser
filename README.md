@@ -681,3 +681,6 @@ The following tone sequences were chosen for playback:
 | `[(950, 330), (1400, 330), (1800, 330)]` | IVR menu item is invalid |
 
 With the updated ESP32 code and the new Python script, phone numbers and IVR systems can be created that allow the Vanguard to do many things. Such things involve opening websites, opening programs, sending emails, sending messages etc etc
+
+Here is the full telephone exchange circuit:  
+![Telephone Exchange Schematic](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/Telephone%20Exchange%20Schematic.png)
