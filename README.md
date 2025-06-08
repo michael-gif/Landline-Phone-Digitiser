@@ -673,11 +673,11 @@ void loop() {
 
 Each tone sequence follows the format `[(frequency, durationMillis),...]`. So a sequence consisting of `[(500,100),(750,250)]` would play a 500Hz tone for 100ms, immediately followed by a 750Hz tone for 250ms.  
 The following tone sequences were chosen for playback:
-| Sequence | Description |
-| -------- | ----------- |
-| `[(950, 330), (1400, 330), (1800, 330)]` | Number doesn't exist |
-| `[(440, 100), (494, 100), (523, 200)]` | User has entered the IVR menu |
-| `[(440, 150), (660, 150), (880, 330)]` | IVR menu item is valid |
-| `[(950, 330), (1400, 330), (1800, 330)]` | IVR menu item is invalid |
+| Sequence | Description | Demo |
+| -------- | ----------- | ---- |
+| `[(950, 330), (1400, 330), (1800, 330)]` | Number doesn't exist | ![Wrong Number](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Tone%20Sequence%20Demos/wrong_number.wav) |
+| `[(440, 100), (494, 100), (523, 200)]` | User has entered the IVR menu | ![Entered IVR Menu](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Tone%20Sequence%20Demos/entered_ivr_menu.wav) |
+| `[(440, 150), (660, 150), (880, 330)]` | IVR menu item is valid | ![IVR Menu Item Valid](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Tone%20Sequence%20Demos/ivr_menu_item_valid.wav) |
+| `[(950, 330), (1400, 330), (1800, 330)]` | IVR menu item is invalid | ![IVR Menu Item Invalid](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Tone%20Sequence%20Demos/ivr_menu_item_invalid.wav) |
 
 With the updated ESP32 code and the new Python script, phone numbers and IVR systems can be created that allow the Vanguard to do many things. Such things involve opening websites, opening programs, sending emails, sending messages etc etc
