@@ -18,7 +18,7 @@ BT431A is enough for the phone lines and carries the following signals:
 | 5   | Leg A         |
 
 Uk landline phones have adapter cables that convert between BT plugs and RJ11 plugs. Wiring diagram below:  
-![BT to RJ11 cable wiring](https://cdn.britannica.com/96/1296-050-4A65097D/gelding-bay-coat.jpg?w=300)  
+![BT to RJ11 cable wiring](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/RJ11%20to%20BT%20wiring.png)  
 
 Testing the phone lines with a multimeter yielded the following results:
 - 48V DC between A and B when on-hook
