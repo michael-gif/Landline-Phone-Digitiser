@@ -31,7 +31,7 @@ Picking up the handset closes a loop between the A and B lines. The telephone ex
 Knowing the wiring of the phone lines isn't enough to figure out how to digitise the phone, so I disassembled the phone, pulled out the PCB and stared at it for 3 hours straight.  
 
 Here is an image of the PCB:  
-![Vanguard PCB](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/example%20Vanguard PCB image.jpg)  
+![Vanguard PCB](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Vanguard%20PCB%20image.jpg)  
 And the schematics I created from looking at the traces:  
 ![full circuit](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/SCH_Vanguard%204001AR%20Circuit_1-Full%20Circuit_2025-06-02.png)  
 ![ringer circuit only](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/SCH_Vanguard%204001AR%20Circuit_2-Ringer%20Circuit_2025-06-02.png)  
