@@ -673,8 +673,8 @@ void loop() {
 
 Each tone sequence follows the format `[(frequency, durationMillis),...]`. So a sequence consisting of `[(500,100),(750,250)]` would play a 500Hz tone for 100ms, immediately followed by a 750Hz tone for 250ms.  
 The following tone sequences were chosen for playback:
-| Sequence | Description | Demo |
-| -------- | ----------- | ---- |
+| Sequence | Description |
+| -------- | ----------- |
 | `[(950, 330), (1400, 330), (1800, 330)]` | Number doesn't exist|
 | `[(440, 100), (494, 100), (523, 200)]` | User has entered the IVR menu|
 | `[(440, 150), (660, 150), (880, 330)]` | IVR menu item is valid |
