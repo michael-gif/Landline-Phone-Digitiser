@@ -675,9 +675,9 @@ Each tone sequence follows the format `[(frequency, durationMillis),...]`. So a 
 The following tone sequences were chosen for playback:
 | Sequence | Description | Demo |
 | -------- | ----------- | ---- |
-| `[(950, 330), (1400, 330), (1800, 330)]` | Number doesn't exist | ![Wrong Number](https://github.com/user-attachments/assets/6981e25e-513f-4207-ab3c-e82426d98c31) |
-| `[(440, 100), (494, 100), (523, 200)]` | User has entered the IVR menu | ![Entered IVR Menu](https://github.com/user-attachments/assets/69f28dd8-e615-4e09-8e12-6e133a77ac85) |
-| `[(440, 150), (660, 150), (880, 330)]` | IVR menu item is valid | ![IVR Menu Item Valid](https://github.com/user-attachments/assets/88735528-1373-4d7a-ba8f-6758f491eaf8) |
-| `[(950, 330), (1400, 330), (1800, 330)]` | IVR menu item is invalid | ![IVR Menu Item Invalid](https://github.com/user-attachments/assets/615d2c37-8aad-44b3-ade5-6ba445c5174f) |
+| `[(950, 330), (1400, 330), (1800, 330)]` | Number doesn't exist|
+| `[(440, 100), (494, 100), (523, 200)]` | User has entered the IVR menu|
+| `[(440, 150), (660, 150), (880, 330)]` | IVR menu item is valid |
+| `[(950, 330), (1400, 330), (1800, 330)]` | IVR menu item is invalid |
 
 With the updated ESP32 code and the new Python script, phone numbers and IVR systems can be created that allow the Vanguard to do many things. Such things involve opening websites, opening programs, sending emails, sending messages etc etc
