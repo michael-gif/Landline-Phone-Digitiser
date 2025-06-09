@@ -115,7 +115,7 @@ As you can see, each button press looks much different with two obvious frequenc
 ### Detecting when the phone is off hook
 A 50 ohm resistor was placed in series with the phone in order to detect when the phone is off hook. When the phone is on hook the circuit is open and the resistor voltage is 0V. When the phone is off hook, the circuit is closed and the resistor voltage is >0V. From testing, the resistor voltage is 2.8~3.0V when the phone is off hook.
 
-### Improving the dtmf detection code
+### Improving the DTMF detection code
 After rewriting the ESP32 code for the DTMF detection, more code was written to convert pairs of frequencies into numbers. This was done by detecting when two frequencies were spiking, summing those frequencies together and using a switch statement to map the sum to its keypad number. Since each frequency is unique, their sums are also unique which makes this possible. Full code:
 ```c++
 #define FFT_SAMPLE_COUNT 205
@@ -248,14 +248,14 @@ void loop() {
   }
 }
 ```
-The code produces something like this in the serial output:  
+When testing this code by pressing buttons on the keypad, the following was produced:  
 ![Serial Output](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/example%20output.png)  
 
-While the circuit and code work, they are extremely unstable. The circuit has a potentiometer to bias the isolated AC signal before it gets amplified and processed by the ESP32, and simply banging on the desk can mess up that bias and break the detection. This potentiometer was replaced with 3 resistors which fixed the problem by keeping the bias constant.
+The circuit and code work, but they are extremely unstable. The circuit has a potentiometer to bias the isolated AC signal before it gets amplified and processed by the ESP32, and simply shifting the breadboard with the circuit a few millimetres can mess up that bias and break the detection. To fix this the potentiometer was replaced with 3 resistors which keep the bias constant.
 
-As for the code, it uses two thresholds to detect specific frequencies. When a frequency exceeds the first threshold, it is considered the start of a DTMF tone. When it dips below the second threshold it is considered the end of a DTMF tone. This is an archaic, finnicky technique that isn't reliable. If the max amplitude of the frequencies goes below the first threshold then the detection no longer works.
+As for the code, it uses two thresholds to detect specific frequencies. When a frequency exceeds the first threshold, it is considered the start of a DTMF tone. When it dips below the second threshold it is considered the end of a DTMF tone. This is an archaic, finnicky technique that isn't reliable. If the maximum amplitude of the frequencies goes below the first threshold then the detection no longer works.
 
-A new method of detection was developed so that only one threshold is needed, and that one threshold is for detecting the presend of a DTMF tone rather than the presence of specific frequencies. Once a tone is detected, the top two most prevalent frequencies are extracted and converted into a number. This new method is much more reliable as the top two frequencies are always guaranteed to be the correct ones, and the maximum amplitude can drop and still be detected since the DTMF frequencies will always exceed the noise level. The threshold can be set to just above the noise level and the DTMF tones will always be detected.
+A new method of detection was developed so that only one threshold is needed, and that one threshold is for detecting the presence of a DTMF tone rather than the presence of specific frequencies. Once a tone is detected, the top two most prevalent frequencies are extracted and converted into a number. This new method is much more reliable as the top two frequencies are always guaranteed to be the correct ones, and the maximum amplitude can drop and still be detected since the DTMF frequencies will always exceed the noise level. The threshold can be set to just above the noise level and the DTMF tones will always be detected.
 
 The updated, reliable code:
 ```c++
@@ -437,17 +437,17 @@ void loop() {
 ```
 
 ### Sending audio back to the phone
-The new code works very well, but there is a problem. You can dial numbers, but you can't receive audio. To fix this an extra circuit is needed that can superimpose AC audio signals onto the phones 12V Leg A line. The phone will automatically isolate this AC audio signal from Leg A and send it to the speaker in the handset allowing you to hear the audio.
+The new code works very well, but there is a problem. You can dial numbers, but you can't receive audio. To fix this an extra circuit is needed that can superimpose AC audio signals onto the phones 12V Leg A line. The phone will automatically isolate this AC audio signal from Leg A and send it to the speaker in the handset allowing you to hear the audio. Superimposing AC onto DC means combining the two together so that you end up with the same AC but offset by the DC.
 
 My initial research on a circuit that can do this job led to [this article](https://masteringelectronicsdesign.com/injecting-ac-to-dc-power-supply/) which uses a capacitor and inductor to inject AC into DC. I didn't have any inductors so I modified the circuit to use a diode instead of an inductor. The new circuit was simulated in LTSpice to see if it could work:  
 ![LTSpice simulation](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/LTSpice%20ac%20superimpose%20simulation.png)  
-On the top half of the image is a graph showing the voltages at different points in the circuit. The bottom half is the circuit itself. On the graph, the green line is a PWM signal that can be produced by a microcontroller. The pink line is the output of the RC filter formed by R2 and C2 that only allow frequencies less than 1591Hz through, and the red line is the right side of C1 which isolates the AC component. This AC component is then combined with the 5V DC that is outputed from D1, and the combined voltages are sent to R1 which simulates the Vanguard as a load.
+On the top half of the image is a graph showing the voltages at different points in the circuit. The bottom half is the circuit itself. On the graph, the green line is a PWM signal that can be produced by a microcontroller. The pink line is the output of the RC filter formed by R2 and C2 that only allows frequencies less than 1591Hz through, and the red line is the right side of C1 which isolates the AC component. This AC component is then combined with the 5V DC outputed from D1, and the combined voltages are sent to R1 which simulates the Vanguard as a load.
 
-The circuit was tested in real life on a breadboard, replacing the 5V part with the 12V from the power supply and the circuit worked just fine. The microcontroller was able to output a 500Hz PWM signal into the circuit, the circuit superimposed the signal onto the 12V line going into the phone and the phone was able to isolate the AC signal and send it to the speaker in the handset resulting in an audible 500Hz tone when you put the handset speaker to your ear.
+The circuit was tested in real life on a breadboard, replacing the 5V part with the 12V from the power supply and the circuit worked just fine. The microcontroller was able to output a 500Hz PWM signal into the circuit, the circuit superimposed the signal onto the 12V line going into the phone and the phone was able to isolate the AC signal and send it to the speaker in the handset, resulting in an audible 500Hz tone when you put the handset speaker to your ear.
 
-Once the AC superimposing circuit was tested, work began on writing code for the ESP32 to allow it to receive commands from a python script that acts as IVR software. IVR stands for Interactive Voice Response and is the system used for automating phone systems between businesses and customers. Instead of being directed to a person, a customer is directed to a robotic menu that reads out options and listens for button presses.
+Once the AC superimposing circuit was tested, work began on writing code for the ESP32 to allow it to receive commands from a Python script that acts as IVR software. IVR stands for Interactive Voice Response and is the system used for automating phone systems between businesses and customers. Instead of being directed to a person, a customer is directed to a robotic menu that reads out options and listens for button presses.
 
-Getting the phone to work with a computer requires this kind of software, so I wrote the following python script that can read the ESP32's output from the serial port, and send a sequence of frequencies back to the ESP32 which can be sent to the handset. This way you can dial a number, have the script detect it and play back a nice sounding sequence of tones in your ear. You can also dial a number and have it open a website. The script:
+Getting the phone to work with a computer requires this kind of software, so I wrote the following Python script that can read the ESP32's output from the serial port, and send a sequence of tones back to the ESP32 which can be sent to the handset. This way you can dial a number, have the script detect it and play back a nice sounding sequence of tones into your ear. You can also dial a number and have it open a website. The script:
 ```python
 import serial
 import threading
@@ -461,23 +461,22 @@ import time
 ser = serial.Serial('COM3', 115200)
 
 events = {}
-def register_number(button_sequence: str):
-  """
-  This is a decorator for functions that turns them into a dialable function.
-  button_sequence is a phone number as a string that when dialed, will call the function
-  that is decorated.
-  """
+def register_number(phone_number: str):
+    """
+    This is a decorator for functions that turns them into a dialable function.
+    phone_number is a phone number as a string that when dialed, will call the function that is decorated.
+    """
     def decorator(function):
-        events[button_sequence] = function
-        print(f"Registered sequence '{button_sequence}' to function '{function.__name__}'")
+        events[phone_number] = function
+        print(f"Registered sequence '{phone_number}' to function '{function.__name__}'")
         return function # don't need to wrap the function
     return decorator
 
 def send_tone_sequence(tones: list):
-  """
-  Takes a list of tuples in the format [(frequency, duration),...]
-  and turns them into a string message that is sent to the esp32
-  """
+    """
+    Takes a list of tuples in the format [(frequency, duration),...]
+    and turns them into a string message that is sent to the ESP32
+    """
     # send command to play sequence
     message = "TONESEQUENCE_"
     for tone in tones:
@@ -492,10 +491,10 @@ def send_tone_sequence(tones: list):
             return
 
 def listen_for_button():
-  """
-  Listens for a keypad button press on the physical phone
-  Returns -1 if the phone is put on hook
-  """
+    """
+    Listens for a keypad button press on the physical phone
+    Returns -1 if the phone is put on hook while listening
+    """
     while True:
         data = ser.readline().decode().strip()
         if data == "ON_HOOK":
@@ -519,7 +518,7 @@ def phone_number_2():
 @register_number("8520")
 def ivr_system():
     send_tone_sequence([(440, 100), (494, 100), (523, 200)]) # notify user they have accessed the ivr system
-    
+
     print("Waiting for button press")
     button = listen_for_button() # wait for a button press
     if button == -1:
@@ -529,7 +528,7 @@ def ivr_system():
     if button in ["1", "2", "3", "4", "5", "6"]:
         send_tone_sequence([(440, 150), (660, 150), (880, 330)])
         print("Button is valid")
-    else: # Notify user with disconnect tone sequence, then exit the ivr system
+    else: # if the button isn't in the menu then notify them with sad tones then exit the ivr system
         send_tone_sequence([(950, 330), (1400, 330), (1800, 330)])
         print("Invalid button. Cancelling menu")
         return
@@ -551,7 +550,6 @@ listening = False
 current_sequence = ""
 while True:
     data = ser.readline().decode().strip()
-
     if data == "OFF_HOOK":
         listening = True
         print("OFF_HOOK")
@@ -561,22 +559,17 @@ while True:
             print()
         print("ON_HOOK")
         current_sequence = ""
-      
     if listening:
         if not data.startswith("K"):
             continue
         if data == "KEY_?":
-            # KEY_? happens when the detected frequencies don't match a known DTMF tone
             continue
-
-        detected_button = data.split("_")[1]
-        current_sequence += detected_button
-        print(detected_button, end="", flush=True)
-
-        # process the dialed numbers when the user pressed the * key on the keypad
+        detected_number = data.split("_")[1]
+        current_sequence += detected_number
+        print(detected_number, end="", flush=True)
         if data == "KEY_*":
             print()
-            current_sequence = current_sequence[:-1] # remove asterisk
+            current_sequence = current_sequence[:-1]
             found_sequence = False
             callback_to_execute = None
             for event in events:
@@ -584,6 +577,7 @@ while True:
                     function_name = events[current_sequence].__name__
                     print(f"Triggered function: {function_name}")
                     found_sequence = True
+                    send_tone_sequence([(440, 150), (660, 150), (880, 330)])
                     callback_to_execute = events[current_sequence]
             if not found_sequence:
                 print("Sequence does not exist")
@@ -600,6 +594,7 @@ while True:
                     next_callback = callback_to_execute()
                     if next_callback is None:
                         break
+
 ```
 
 And here is the ESP32 code for playing tone sequences:
