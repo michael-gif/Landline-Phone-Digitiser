@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Brush = Northwoods.Go.Brush;
 using Font = Northwoods.Go.Font;
 using Panel = Northwoods.Go.Panel;
 

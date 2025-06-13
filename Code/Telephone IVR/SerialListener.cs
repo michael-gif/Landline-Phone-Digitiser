@@ -16,13 +16,13 @@ namespace Telephone_IVR
         static SerialPort ser = new SerialPort("COM3", 115200);
         public static bool running = false;
         public static Thread listenerThread;
-        static Dictionary<string, Node> events = new Dictionary<string, Node>();
+        static Dictionary<string, Node> registeredNumbers = new Dictionary<string, Node>();
         static volatile bool listening = false;
         static string currentSequence = "";
 
         static void RegisterNumber(string phoneNumber, Node nextNode)
         {
-            events[phoneNumber] = nextNode;
+            registeredNumbers[phoneNumber] = nextNode;
             Console.WriteLine($"Registered sequence '{phoneNumber}' to function '{nextNode.Category}'");
         }
 
@@ -173,7 +173,7 @@ namespace Telephone_IVR
                         bool foundSequence = false;
                         Node nodeToExecute = null;
 
-                        if (events.TryGetValue(currentSequence, out nodeToExecute))
+                        if (registeredNumbers.TryGetValue(currentSequence, out nodeToExecute))
                         {
                             Console.WriteLine($"Found function: {nodeToExecute.Category}");
                             foundSequence = true;
