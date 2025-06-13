@@ -1,13 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>Telephone_IVR</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>resources\telephone icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="resources\telephone icon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Northwoods.GoDiagram.WinForms" Version="10.0.12" />
@@ -30,7 +43,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release (&#xD;&#xA;del bin\Release\net8.0-windows\Telephone IVR.pdb&#xD;&#xA;del bin\Release\net8.0-windows\Northwoods.GoDiagram.WinForms.CircularLayout.dll&#xD;&#xA;del bin\Release\net8.0-windows\Northwoods.GoDiagram.WinForms.ForceDirectedLayout.dll&#xD;&#xA;del bin\Release\net8.0-windows\Northwoods.GoDiagram.WinForms.LayeredDigraphLayout.dll&#xD;&#xA;del bin\Release\net8.0-windows\OpenTK.GLControl.dll&#xD;&#xA;del bin\Release\net8.0-windows\SkiaSharp.Extended.Svg.dll&#xD;&#xA;)" />
+    <Exec Command="if $(ConfigurationName) == Release (&#xD;&#xA;del bin\Release\net8.0-windows\Northwoods.GoDiagram.WinForms.CircularLayout.dll&#xD;&#xA;del bin\Release\net8.0-windows\Northwoods.GoDiagram.WinForms.ForceDirectedLayout.dll&#xD;&#xA;del bin\Release\net8.0-windows\Northwoods.GoDiagram.WinForms.LayeredDigraphLayout.dll&#xD;&#xA;del bin\Release\net8.0-windows\OpenTK.GLControl.dll&#xD;&#xA;del bin\Release\net8.0-windows\SkiaSharp.Extended.Svg.dll&#xD;&#xA;del bin\Release\net8.0-windows\Telephone IVR.pdb&#xD;&#xA;resources\winrar a -ep1 -r &quot;bin\Release\net8.0-windows\TelephoneIVR.zip&quot; &quot;bin\Release\net8.0-windows\&quot;&#xD;&#xA;)" />
   </Target>
 
 </Project>

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             diagramControl1 = new Northwoods.Go.WinForms.DiagramControl();
             menuStrip1 = new MenuStrip();
             exportModelToolStripMenuItem = new ToolStripMenuItem();
@@ -141,6 +142,7 @@
             ClientSize = new Size(800, 450);
             Controls.Add(diagramControl1);
             Controls.Add(menuStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
