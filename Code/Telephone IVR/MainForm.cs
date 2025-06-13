@@ -4,6 +4,7 @@ using Northwoods.Go.Models;
 using Northwoods.Go.Tools;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using Brush = Northwoods.Go.Brush;
 using Font = Northwoods.Go.Font;
 using Panel = Northwoods.Go.Panel;
@@ -19,6 +20,11 @@ namespace Telephone_IVR
         {
             InitializeComponent();
             diagram = diagramControl1.Diagram;
+
+            contextMenuStrip1.Items.Insert(0, new ToolStripLabel("Add node") { Font = new System.Drawing.Font(DefaultFont, System.Drawing.FontStyle.Bold) });
+            contextMenuStrip1.Items.Insert(1, new ToolStripSeparator());
+            diagramControl1.ContextMenuStrip = contextMenuStrip1;
+
             SetupGraph();
             CreateNodes();
         }
@@ -107,8 +113,6 @@ namespace Telephone_IVR
                   { 1, "#7AE060" }
             }));
 
-            var darkred = new Brush("#f2564b");
-
             // each action is represented by a shape and some text
             var actionTemplate = new Panel(PanelType.Horizontal).Add(
                 new Shape
@@ -117,6 +121,14 @@ namespace Telephone_IVR
                     Height = 10,
                     Margin = 5
                 }.Bind("Fill", "Color"),
+                new TextBlock
+                {
+                    Font = new Font("Segoe UI", 10),
+                    Stroke = "black",
+                }.Bind("Text")
+            );
+
+            var toneTemplate = new Panel(PanelType.Horizontal).Add(
                 new TextBlock
                 {
                     Font = new Font("Segoe UI", 10),
@@ -147,7 +159,7 @@ namespace Telephone_IVR
                 }.Add(
                     new Shape("Rectangle")
                     {
-                        Fill = darkred,
+                        Fill = "#f2564b",
                         Stroke = null
                     },
                     new Panel(PanelType.Vertical)
@@ -163,7 +175,7 @@ namespace Telephone_IVR
                             {
                                 Width = 8,
                                 Height = 8,
-                                PortId = "InTop",
+                                PortId = "In",
                                 ToSpot = Spot.Top,
                                 ToLinkable = true
                             }
@@ -177,7 +189,7 @@ namespace Telephone_IVR
                                 Stroke = "black",
                             }.Bind("Text", "Label")
                         ),
-                        // optional list of actions
+                        // list of actions
                         new Panel(PanelType.Vertical)
                         {
                             Stretch = Stretch.Horizontal,
@@ -237,20 +249,54 @@ namespace Telephone_IVR
                     {
                         Margin = 3
                     }.Add(
-                        // node title
-                        new TextBlock
+                        // top port panel
+                        new Panel(PanelType.Spot)
                         {
-                            Stretch = Stretch.Horizontal,
-                            Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Bold),
-                            Stroke = "black",
-                            Text = "Open Website"
-                        },
-                        new TextBlock
+                            Alignment = Spot.Top
+                        }.Add(
+                            new Shape
+                            {
+                                Width = 8,
+                                Height = 8,
+                                PortId = "In",
+                                ToSpot = Spot.Top,
+                                ToLinkable = true
+                            }
+                        ),
+                        new Panel(PanelType.Vertical).Add(
+                            // node title
+                            new TextBlock
+                            {
+                                Stretch = Stretch.Horizontal,
+                                Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Bold),
+                                Stroke = "black",
+                                Text = "Open Website"
+                            }
+                        ).Add(
+                            new TextBlock
+                            {
+                                Stretch = Stretch.Horizontal,
+                                Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Regular),
+                                Background = "white"
+                            }.Bind("Text", "Label")
+                        ),
+                        // bottom port panel
+                        new Panel(PanelType.Horizontal)
                         {
-                            Stretch = Stretch.Horizontal,
-                            Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Regular),
-                            Background = "white"
-                        }.Bind("Text", "Label")
+                            Alignment = Spot.Bottom,
+                            Margin = 3,
+                            ItemTemplate = menuPortTemplate
+                        }.Add(
+                            new Shape
+                            {
+                                Width = 8,
+                                Height = 8,
+                                Fill = "black",
+                                PortId = "Out",
+                                FromSpot = Spot.Bottom,
+                                FromLinkable = true
+                            }
+                        )
                     )
                 )
             )
@@ -273,20 +319,149 @@ namespace Telephone_IVR
                     {
                         Margin = 3
                     }.Add(
+                        // top port panel
+                        new Panel(PanelType.Spot)
+                        {
+                            Alignment = Spot.Top
+                        }.Add(
+                            new Shape
+                            {
+                                Width = 8,
+                                Height = 8,
+                                PortId = "In",
+                                ToSpot = Spot.Top,
+                                ToLinkable = true
+                            }
+                        ),
+                        new Panel(PanelType.Vertical).Add(
+                            // node title
+                            new TextBlock
+                            {
+                                Stretch = Stretch.Horizontal,
+                                Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Bold),
+                                Stroke = "black",
+                                Text = "Open Application"
+                            }
+                        ).Add(
+                            new TextBlock
+                            {
+                                Stretch = Stretch.Horizontal,
+                                Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Regular),
+                                Background = "white"
+                            }.Bind("Text", "Label")
+                        ),
+                        // bottom port panel
+                        new Panel(PanelType.Horizontal)
+                        {
+                            Alignment = Spot.Bottom,
+                            Margin = 3,
+                            ItemTemplate = menuPortTemplate
+                        }.Add(
+                            new Shape
+                            {
+                                Width = 8,
+                                Height = 8,
+                                Fill = "black",
+                                PortId = "Out",
+                                FromSpot = Spot.Bottom,
+                                FromLinkable = true
+                            }
+                        )
+                    )
+                )
+            )
+            );
+
+            diagram.NodeTemplateMap.Add("PLAY_TONE_SEQUENCE", new Node(PanelType.Vertical)
+            {
+                SelectionElementName = "BODY"
+            }.Add(
+                // the main body consists of a Rectangle surrounding nested Panels
+                new Panel(PanelType.Auto)
+                {
+                    Name = "BODY"
+                }.Add(
+                    new Shape("Rectangle")
+                    {
+                        Fill = "#c670e6",
+                        Stroke = null
+                    },
+                    new Panel(PanelType.Vertical)
+                    {
+                        Margin = 3
+                    }.Add(
+                        // top port panel
+                        new Panel(PanelType.Spot)
+                        {
+                            Alignment = Spot.Top
+                        }.Add(
+                            new Shape
+                            {
+                                Width = 8,
+                                Height = 8,
+                                PortId = "In",
+                                ToSpot = Spot.Top,
+                                ToLinkable = true
+                            }
+                        ),
                         // node title
-                        new TextBlock
+                        new Panel(PanelType.Horizontal).Add(
+                            new TextBlock
+                            {
+                                Stretch = Stretch.Horizontal,
+                                Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Bold),
+                                Stroke = "black",
+                                Text = "Play Tone Sequence"
+                            }
+                        ),
+                        // list of tones
+                        new Panel(PanelType.Vertical)
                         {
                             Stretch = Stretch.Horizontal,
-                            Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Bold),
-                            Stroke = "black",
-                            Text = "Open Application"
-                        },
-                        new TextBlock
+                            Visible = true
+                        }.Add(
+                            // headered by a label and a PanelExpanderButton inside a table
+                            new Panel(PanelType.Table)
+                            {
+                                Stretch = Stretch.Horizontal
+                            }.Add(
+                                new TextBlock("Tones")
+                                {
+                                    Alignment = Spot.Left,
+                                    Font = new Font("Segoe UI", 10),
+                                    Stroke = "black",
+                                },
+                                Builder.Make<Panel>("PanelExpanderButton")
+                                .Set(new { Column = 1, Alignment = Spot.Right })
+                            ), // end Table panel
+                               // with the list data bound in the Vertical Panel
+                            new Panel(PanelType.Vertical)
+                            {
+                                Name = "COLLAPSIBLE",
+                                Padding = 2,
+                                Stretch = Stretch.Horizontal, // take up whole available width
+                                Background = "white", // to distinguish from the node's body
+                                DefaultAlignment = Spot.Left, // thus no need to specify alignment on each element
+                                ItemTemplate = toneTemplate // the Panel created for each item in Panel.ItemList
+                            }.Bind("ItemList", "Options") // bind Panel.ItemList to NodeData.Options
+                        ),
+                        // bottom port panel
+                        new Panel(PanelType.Horizontal)
                         {
-                            Stretch = Stretch.Horizontal,
-                            Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Regular),
-                            Background = "white"
-                        }.Bind("Text", "Label")
+                            Alignment = Spot.Bottom,
+                            Margin = 3,
+                            ItemTemplate = menuPortTemplate
+                        }.Add(
+                            new Shape
+                            {
+                                Width = 8,
+                                Height = 8,
+                                Fill = "black",
+                                PortId = "Out",
+                                FromSpot = Spot.Bottom,
+                                FromLinkable = true
+                            }
+                        )
                     )
                 )
             )
@@ -320,12 +495,12 @@ namespace Telephone_IVR
         public void CreateNodes()
         {
             var nodeDataSource = new List<NodeData> {
-                MenuNode("Menu - Menu1", 3),
-                MenuNode("Menu - Menu2", 3)
+                MenuNode("Menu1", 3),
+                MenuNode("Menu2", 3)
             };
 
             var linkDataSource = new List<LinkData> {
-                new LinkData { From = 1, FromPort = "0", To = 2, ToPort = "InPort" }
+                new LinkData { From = 1, FromPort = "0", To = 2, ToPort = "In" }
             };
 
             // create the Model with the above data, and assign to the Diagram
@@ -359,7 +534,7 @@ namespace Telephone_IVR
             {
                 Key = nodeCount,
                 Category = "MENU",
-                Label = title,
+                Label = "Menu - " + title,
                 Options = new List<FieldData>()
             };
             for (int i = 0; i < numOptions; i++)
@@ -370,7 +545,7 @@ namespace Telephone_IVR
             return nodeData;
         }
 
-        public NodeData OpenAppNode(string path)
+        public NodeData OpenApplicationNode(string path)
         {
             nodeCount++;
             return new NodeData { Key = nodeCount, Category = "OPEN_APPLICATION", Label = path };
@@ -380,6 +555,17 @@ namespace Telephone_IVR
         {
             nodeCount++;
             return new NodeData { Key = nodeCount, Category = "OPEN_WEBSITE", Label = url };
+        }
+
+        public NodeData PlayToneSequenceNode(List<string> sequence)
+        {
+            nodeCount++;
+            var nodeData = new NodeData { Key = nodeCount, Category = "PLAY_TONE_SEQUENCE", Options = new List<FieldData>() };
+            for (int i = 0; i < sequence.Count; i+=2)
+            {
+                nodeData.Options.Add(new FieldData { Text = sequence[i].ToString() + "Hz - " + sequence[i+1].ToString() + "ms" });
+            }
+            return nodeData;
         }
 
         public NodeData TerminalNode(string personName)
@@ -419,6 +605,38 @@ namespace Telephone_IVR
                 Console.WriteLine("The file could not be read:");
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private void menuNodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewMenuNodeForm form = new NewMenuNodeForm();
+            form.ShowDialog();
+            if (form.MENU_NAME.Trim() != "")
+                diagram.Model.AddNodeData(MenuNode(form.MENU_NAME, form.NUM_OPTIONS));
+        }
+
+        private void openWebsiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewOpenWebsiteNodeForm form = new NewOpenWebsiteNodeForm();
+            form.ShowDialog();
+            if (form.URL.Trim() != "")
+                diagram.Model.AddNodeData(OpenWebsiteNode(form.URL));
+        }
+
+        private void openApplicationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewOpenApplicationNodeForm form = new NewOpenApplicationNodeForm();
+            form.ShowDialog();
+            if (form.PATH.Trim() != "")
+                diagram.Model.AddNodeData(OpenApplicationNode(form.PATH));
+        }
+
+        private void playToneSequenceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewPlayToneSequenceNodeForm form = new NewPlayToneSequenceNodeForm();
+            form.ShowDialog();
+            if (form.TONE_SEQUENCE.Count > 0)
+                diagram.Model.AddNodeData(PlayToneSequenceNode(form.TONE_SEQUENCE));
         }
     }
 

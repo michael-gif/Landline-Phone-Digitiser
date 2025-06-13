@@ -28,13 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             diagramControl1 = new Northwoods.Go.WinForms.DiagramControl();
             menuStrip1 = new MenuStrip();
             exportModelToolStripMenuItem = new ToolStripMenuItem();
             exportCallGraphToolStripMenuItem = new ToolStripMenuItem();
             importCallGraphToolStripMenuItem = new ToolStripMenuItem();
             importModelToolStripMenuItem = new ToolStripMenuItem();
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            menuNodeToolStripMenuItem = new ToolStripMenuItem();
+            openWebsiteToolStripMenuItem = new ToolStripMenuItem();
+            openApplicationToolStripMenuItem = new ToolStripMenuItem();
+            playToneSequenceToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
+            contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // diagramControl1
@@ -60,27 +67,63 @@
             // exportModelToolStripMenuItem
             // 
             exportModelToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exportCallGraphToolStripMenuItem, importCallGraphToolStripMenuItem });
+            exportModelToolStripMenuItem.Name = "exportModelToolStripMenuItem";
             exportModelToolStripMenuItem.Size = new Size(37, 20);
             exportModelToolStripMenuItem.Text = "File";
             // 
             // exportCallGraphToolStripMenuItem
             // 
             exportCallGraphToolStripMenuItem.Name = "exportCallGraphToolStripMenuItem";
-            exportCallGraphToolStripMenuItem.Size = new Size(180, 22);
+            exportCallGraphToolStripMenuItem.Size = new Size(168, 22);
             exportCallGraphToolStripMenuItem.Text = "Export Call Graph";
             exportCallGraphToolStripMenuItem.Click += exportCallGraphToolStripMenuItem_Click;
             // 
             // importCallGraphToolStripMenuItem
             // 
             importCallGraphToolStripMenuItem.Name = "importCallGraphToolStripMenuItem";
-            importCallGraphToolStripMenuItem.Size = new Size(180, 22);
+            importCallGraphToolStripMenuItem.Size = new Size(168, 22);
             importCallGraphToolStripMenuItem.Text = "Import Call Graph";
             importCallGraphToolStripMenuItem.Click += importCallGraphToolStripMenuItem_Click;
             // 
             // importModelToolStripMenuItem
             // 
+            importModelToolStripMenuItem.Name = "importModelToolStripMenuItem";
             importModelToolStripMenuItem.Size = new Size(60, 20);
             importModelToolStripMenuItem.Text = "Run IVR";
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { menuNodeToolStripMenuItem, openWebsiteToolStripMenuItem, openApplicationToolStripMenuItem, playToneSequenceToolStripMenuItem });
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(179, 92);
+            // 
+            // menuNodeToolStripMenuItem
+            // 
+            menuNodeToolStripMenuItem.Name = "menuNodeToolStripMenuItem";
+            menuNodeToolStripMenuItem.Size = new Size(178, 22);
+            menuNodeToolStripMenuItem.Text = "Menu Node";
+            menuNodeToolStripMenuItem.Click += menuNodeToolStripMenuItem_Click;
+            // 
+            // openWebsiteToolStripMenuItem
+            // 
+            openWebsiteToolStripMenuItem.Name = "openWebsiteToolStripMenuItem";
+            openWebsiteToolStripMenuItem.Size = new Size(178, 22);
+            openWebsiteToolStripMenuItem.Text = "Open Website";
+            openWebsiteToolStripMenuItem.Click += openWebsiteToolStripMenuItem_Click;
+            // 
+            // openApplicationToolStripMenuItem
+            // 
+            openApplicationToolStripMenuItem.Name = "openApplicationToolStripMenuItem";
+            openApplicationToolStripMenuItem.Size = new Size(178, 22);
+            openApplicationToolStripMenuItem.Text = "Open Application";
+            openApplicationToolStripMenuItem.Click += openApplicationToolStripMenuItem_Click;
+            // 
+            // playToneSequenceToolStripMenuItem
+            // 
+            playToneSequenceToolStripMenuItem.Name = "playToneSequenceToolStripMenuItem";
+            playToneSequenceToolStripMenuItem.Size = new Size(178, 22);
+            playToneSequenceToolStripMenuItem.Text = "Play Tone Sequence";
+            playToneSequenceToolStripMenuItem.Click += playToneSequenceToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -95,6 +138,7 @@
             Text = "MainForm";
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -107,5 +151,10 @@
         private ToolStripMenuItem importModelToolStripMenuItem;
         private ToolStripMenuItem exportCallGraphToolStripMenuItem;
         private ToolStripMenuItem importCallGraphToolStripMenuItem;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem menuNodeToolStripMenuItem;
+        private ToolStripMenuItem openWebsiteToolStripMenuItem;
+        private ToolStripMenuItem openApplicationToolStripMenuItem;
+        private ToolStripMenuItem playToneSequenceToolStripMenuItem;
     }
 }
