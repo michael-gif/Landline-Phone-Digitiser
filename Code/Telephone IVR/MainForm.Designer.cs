@@ -145,6 +145,7 @@
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "MainForm";
+            FormClosed += MainForm_FormClosed;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             contextMenuStrip1.ResumeLayout(false);

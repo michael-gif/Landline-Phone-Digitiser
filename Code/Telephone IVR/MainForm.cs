@@ -821,7 +821,8 @@ namespace Telephone_IVR
                 runIVRMenuItem.Enabled = true;
                 runIVRMenuItem.Text = "Start IVR";
                 MessageBox.Show("IVR Stopped");
-            } else
+            }
+            else
             {
                 runIVRMenuItem.Enabled = false;
                 SerialListener.Start(diagram);
@@ -829,6 +830,11 @@ namespace Telephone_IVR
                 runIVRMenuItem.Text = "Stop IVR";
                 MessageBox.Show("IVR Started");
             }
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            SerialListener.Stop();
         }
     }
 
