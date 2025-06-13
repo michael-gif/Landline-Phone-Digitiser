@@ -41,7 +41,7 @@ namespace Telephone_IVR
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 DataGridViewCell toneCell = row.Cells[0];
-                DataGridViewCell durationCell = row.Cells[0];
+                DataGridViewCell durationCell = row.Cells[1];
                 if (toneCell.Value == null) continue;
                 string tone = toneCell.Value.ToString();
                 string duration = durationCell.Value.ToString();

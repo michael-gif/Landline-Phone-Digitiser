@@ -31,6 +31,7 @@ namespace Telephone_IVR
                 "#BFFF00", // lime
                 "#40E0D0"  // turquoise
             };
+
         public MainForm()
         {
             InitializeComponent();
@@ -51,81 +52,11 @@ namespace Telephone_IVR
 
         private void SetupGraph()
         {
-            Shape.DefineFigureGenerator("IrritationHazard", (shape, w, h) =>
-            {
-                var geo = new Geometry();
-                var fig = new PathFigure(.2 * w, 0, true);
-                geo.Add(fig);
-
-                fig.Add(new PathSegment(SegmentType.Line, .5 * w, .3 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .8 * w, 0));
-                fig.Add(new PathSegment(SegmentType.Line, w, .2 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .7 * w, .5 * h));
-                fig.Add(new PathSegment(SegmentType.Line, w, .8 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .8 * w, h));
-                fig.Add(new PathSegment(SegmentType.Line, .5 * w, .7 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .2 * w, h));
-                fig.Add(new PathSegment(SegmentType.Line, 0, .8 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .3 * w, .5 * h));
-                fig.Add(new PathSegment(SegmentType.Line, 0, .2 * h).Close());
-                geo.Spot1 = new Spot(.3, .3);
-                geo.Spot2 = new Spot(.7, .7);
-                return geo;
-            });
-
-            Shape.DefineFigureGenerator("ElectricalHazard", (shape, w, h) =>
-            {
-                var geo = new Geometry();
-                var fig = new PathFigure(.37 * w, 0, true);
-                geo.Add(fig);
-
-                fig.Add(new PathSegment(SegmentType.Line, .5 * w, .11 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .77 * w, .04 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .33 * w, .49 * h));
-                fig.Add(new PathSegment(SegmentType.Line, w, .37 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .63 * w, .86 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .77 * w, .91 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .34 * w, h));
-                fig.Add(new PathSegment(SegmentType.Line, .34 * w, .78 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .44 * w, .8 * h));
-                fig.Add(new PathSegment(SegmentType.Line, .65 * w, .56 * h));
-                fig.Add(new PathSegment(SegmentType.Line, 0, .68 * h).Close());
-                return geo;
-            });
-
-            Shape.DefineFigureGenerator("FireHazard", (shape, w, h) =>
-            {
-                var geo = new Geometry();
-                var fig = new PathFigure(.1 * w, h, true);
-                geo.Add(fig);
-
-                fig.Add(new PathSegment(SegmentType.Bezier, .29 * w, 0, -.25 * w, .63 * h,
-                  .45 * w, .44 * h));
-                fig.Add(new PathSegment(SegmentType.Bezier, .51 * w, .42 * h, .48 * w, .17 * h,
-                  .54 * w, .35 * h));
-                fig.Add(new PathSegment(SegmentType.Bezier, .59 * w, .18 * h, .59 * w, .29 * h,
-                  .58 * w, .28 * h));
-                fig.Add(new PathSegment(SegmentType.Bezier, .75 * w, .6 * h, .8 * w, .34 * h,
-                  .88 * w, .43 * h));
-                fig.Add(new PathSegment(SegmentType.Bezier, .88 * w, .31 * h, .87 * w, .48 * h,
-                  .88 * w, .43 * h));
-                fig.Add(new PathSegment(SegmentType.Bezier, .9 * w, h, 1.17 * w, .76 * h,
-                  .82 * w, .8 * h).Close());
-                geo.Spot1 = new Spot(.07, .445);
-                geo.Spot2 = new Spot(.884, .958);
-                return geo;
-            });
-
             diagram.ToolManager.MouseWheelBehavior = WheelMode.Zoom;
             diagram.AllowCopy = false;
             diagram.ToolManager.DraggingTool.DragsTree = false;
             diagram.CommandHandler.DeletesTree = true;
             diagram.UndoManager.IsEnabled = true;
-
-            var greengrad = new Brush(new LinearGradientPaint(new Dictionary<float, string> {
-                  { 0, "#B1E2A5" },
-                  { 1, "#7AE060" }
-            }));
 
             // each action is represented by a shape and some text
             var actionTemplate = new Panel(PanelType.Horizontal).Add(
@@ -689,7 +620,7 @@ namespace Telephone_IVR
                             {
                                 string[] parts = toneString.Split(" - ");
                                 rawTones.Add(parts[0].Replace("Hz", ""));
-                                rawTones.Add(parts[0].Replace("ms", ""));
+                                rawTones.Add(parts[1].Replace("ms", ""));
                             }
                             form4.LoadData(rawTones);
                             form4.TONE_SEQUENCE = rawTones;
@@ -878,6 +809,25 @@ namespace Telephone_IVR
                     });
                 }
                 form.EndEdit();
+            }
+        }
+
+        private void runIVRMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SerialListener.running)
+            {
+                runIVRMenuItem.Enabled = false;
+                SerialListener.Stop();
+                runIVRMenuItem.Enabled = true;
+                runIVRMenuItem.Text = "Start IVR";
+                MessageBox.Show("IVR Stopped");
+            } else
+            {
+                runIVRMenuItem.Enabled = false;
+                SerialListener.Start(diagram);
+                runIVRMenuItem.Enabled = true;
+                runIVRMenuItem.Text = "Stop IVR";
+                MessageBox.Show("IVR Started");
             }
         }
     }

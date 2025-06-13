@@ -34,13 +34,13 @@
             exportModelToolStripMenuItem = new ToolStripMenuItem();
             exportCallGraphToolStripMenuItem = new ToolStripMenuItem();
             importCallGraphToolStripMenuItem = new ToolStripMenuItem();
-            importModelToolStripMenuItem = new ToolStripMenuItem();
+            runIVRMenuItem = new ToolStripMenuItem();
             contextMenuStrip1 = new ContextMenuStrip(components);
+            registeredNumberToolStripMenuItem = new ToolStripMenuItem();
             menuNodeToolStripMenuItem = new ToolStripMenuItem();
             openWebsiteToolStripMenuItem = new ToolStripMenuItem();
             openApplicationToolStripMenuItem = new ToolStripMenuItem();
             playToneSequenceToolStripMenuItem = new ToolStripMenuItem();
-            registeredNumberToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             contextMenuStrip1.SuspendLayout();
             SuspendLayout();
@@ -58,7 +58,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { exportModelToolStripMenuItem, importModelToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { exportModelToolStripMenuItem, runIVRMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -86,52 +86,53 @@
             importCallGraphToolStripMenuItem.Text = "Import Call Graph";
             importCallGraphToolStripMenuItem.Click += importCallGraphToolStripMenuItem_Click;
             // 
-            // importModelToolStripMenuItem
+            // runIVRMenuItem
             // 
-            importModelToolStripMenuItem.Name = "importModelToolStripMenuItem";
-            importModelToolStripMenuItem.Size = new Size(60, 20);
-            importModelToolStripMenuItem.Text = "Run IVR";
+            runIVRMenuItem.Name = "runIVRMenuItem";
+            runIVRMenuItem.Size = new Size(60, 20);
+            runIVRMenuItem.Text = "Run IVR";
+            runIVRMenuItem.Click += runIVRMenuItem_Click;
             // 
             // contextMenuStrip1
             // 
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { registeredNumberToolStripMenuItem, menuNodeToolStripMenuItem, openWebsiteToolStripMenuItem, openApplicationToolStripMenuItem, playToneSequenceToolStripMenuItem });
             contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(181, 136);
+            contextMenuStrip1.Size = new Size(179, 114);
+            // 
+            // registeredNumberToolStripMenuItem
+            // 
+            registeredNumberToolStripMenuItem.Name = "registeredNumberToolStripMenuItem";
+            registeredNumberToolStripMenuItem.Size = new Size(178, 22);
+            registeredNumberToolStripMenuItem.Text = "Registered Number";
+            registeredNumberToolStripMenuItem.Click += registeredNumberToolStripMenuItem_Click;
             // 
             // menuNodeToolStripMenuItem
             // 
             menuNodeToolStripMenuItem.Name = "menuNodeToolStripMenuItem";
-            menuNodeToolStripMenuItem.Size = new Size(180, 22);
+            menuNodeToolStripMenuItem.Size = new Size(178, 22);
             menuNodeToolStripMenuItem.Text = "Menu Node";
             menuNodeToolStripMenuItem.Click += menuNodeToolStripMenuItem_Click;
             // 
             // openWebsiteToolStripMenuItem
             // 
             openWebsiteToolStripMenuItem.Name = "openWebsiteToolStripMenuItem";
-            openWebsiteToolStripMenuItem.Size = new Size(180, 22);
+            openWebsiteToolStripMenuItem.Size = new Size(178, 22);
             openWebsiteToolStripMenuItem.Text = "Open Website";
             openWebsiteToolStripMenuItem.Click += openWebsiteToolStripMenuItem_Click;
             // 
             // openApplicationToolStripMenuItem
             // 
             openApplicationToolStripMenuItem.Name = "openApplicationToolStripMenuItem";
-            openApplicationToolStripMenuItem.Size = new Size(180, 22);
+            openApplicationToolStripMenuItem.Size = new Size(178, 22);
             openApplicationToolStripMenuItem.Text = "Open Application";
             openApplicationToolStripMenuItem.Click += openApplicationToolStripMenuItem_Click;
             // 
             // playToneSequenceToolStripMenuItem
             // 
             playToneSequenceToolStripMenuItem.Name = "playToneSequenceToolStripMenuItem";
-            playToneSequenceToolStripMenuItem.Size = new Size(180, 22);
+            playToneSequenceToolStripMenuItem.Size = new Size(178, 22);
             playToneSequenceToolStripMenuItem.Text = "Play Tone Sequence";
             playToneSequenceToolStripMenuItem.Click += playToneSequenceToolStripMenuItem_Click;
-            // 
-            // registeredNumberToolStripMenuItem
-            // 
-            registeredNumberToolStripMenuItem.Name = "registeredNumberToolStripMenuItem";
-            registeredNumberToolStripMenuItem.Size = new Size(180, 22);
-            registeredNumberToolStripMenuItem.Text = "Registered Number";
-            registeredNumberToolStripMenuItem.Click += registeredNumberToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -156,7 +157,7 @@
         private Northwoods.Go.WinForms.DiagramControl diagramControl1;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem exportModelToolStripMenuItem;
-        private ToolStripMenuItem importModelToolStripMenuItem;
+        private ToolStripMenuItem runIVRMenuItem;
         private ToolStripMenuItem exportCallGraphToolStripMenuItem;
         private ToolStripMenuItem importCallGraphToolStripMenuItem;
         private ContextMenuStrip contextMenuStrip1;
