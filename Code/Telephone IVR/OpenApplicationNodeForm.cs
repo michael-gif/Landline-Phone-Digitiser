@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace Telephone_IVR
 {
-    public partial class NewOpenApplicationNodeForm : Form
+    public partial class OpenApplicationNodeForm : Form
     {
         public string PATH = "";
-        public NewOpenApplicationNodeForm()
+        public OpenApplicationNodeForm()
         {
             InitializeComponent();
         }
@@ -36,6 +36,16 @@ namespace Telephone_IVR
         {
             PATH = textBox1.Text;
             Close();
+        }
+
+        public void BeginEdit()
+        {
+            button1.Text = "Save Node";
+        }
+
+        public void EndEdit()
+        {
+            button1.Text = "Add Node";
         }
     }
 }

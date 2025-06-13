@@ -1,6 +1,6 @@
 ﻿namespace Telephone_IVR
 {
-    partial class NewPlayToneSequenceNodeForm
+    partial class PlayToneSequenceNodeForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewPlayToneSequenceNodeForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlayToneSequenceNodeForm));
             listView1 = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();

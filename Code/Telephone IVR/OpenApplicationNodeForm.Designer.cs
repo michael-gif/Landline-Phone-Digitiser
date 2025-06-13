@@ -1,6 +1,6 @@
 ﻿namespace Telephone_IVR
 {
-    partial class NewOpenApplicationNodeForm
+    partial class OpenApplicationNodeForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewOpenApplicationNodeForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OpenApplicationNodeForm));
             label1 = new Label();
             button1 = new Button();
             textBox1 = new TextBox();

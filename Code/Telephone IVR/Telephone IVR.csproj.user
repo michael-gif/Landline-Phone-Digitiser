@@ -10,16 +10,16 @@
     <Compile Update="NewActionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="NewMenuNodeForm.cs">
+    <Compile Update="MenuNodeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="NewOpenApplicationNodeForm.cs">
+    <Compile Update="OpenApplicationNodeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="NewOpenWebsiteNodeForm.cs">
+    <Compile Update="OpenWebsiteNodeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="NewPlayToneSequenceNodeForm.cs">
+    <Compile Update="PlayToneSequenceNodeForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

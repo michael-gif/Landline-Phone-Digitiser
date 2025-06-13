@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace Telephone_IVR
 {
-    public partial class NewPlayToneSequenceNodeForm : Form
+    public partial class PlayToneSequenceNodeForm : Form
     {
         public List<string> TONE_SEQUENCE = new List<string>();
-        public NewPlayToneSequenceNodeForm()
+        public PlayToneSequenceNodeForm()
         {
             InitializeComponent();
         }
@@ -34,6 +34,7 @@ namespace Telephone_IVR
 
         private void button3_Click(object sender, EventArgs e)
         {
+            TONE_SEQUENCE.Clear();
             foreach (ListViewItem tone in listView1.Items)
             {
                 var duration = tone.SubItems[0];
@@ -41,6 +42,16 @@ namespace Telephone_IVR
                 TONE_SEQUENCE.Add(duration.Text);
             }
             Close();
+        }
+
+        public void BeginEdit()
+        {
+            button3.Text = "Save Node";
+        }
+
+        public void EndEdit()
+        {
+            button3.Text = "Add Node";
         }
     }
 }

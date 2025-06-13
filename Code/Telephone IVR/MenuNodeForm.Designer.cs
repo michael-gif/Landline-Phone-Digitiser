@@ -1,6 +1,6 @@
 ﻿namespace Telephone_IVR
 {
-    partial class NewMenuNodeForm
+    partial class MenuNodeForm
     {
         /// <summary>
         /// Required designer variable.

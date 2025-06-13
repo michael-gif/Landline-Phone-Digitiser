@@ -1,6 +1,6 @@
 ﻿namespace Telephone_IVR
 {
-    partial class NewOpenWebsiteNodeForm
+    partial class OpenWebsiteNodeForm
     {
         /// <summary>
         /// Required designer variable.

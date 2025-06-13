@@ -10,20 +10,28 @@ using System.Windows.Forms;
 
 namespace Telephone_IVR
 {
-    public partial class NewMenuNodeForm : Form
+    public partial class OpenWebsiteNodeForm : Form
     {
-        public string MENU_NAME = "";
-        public int NUM_OPTIONS = 0;
-        public NewMenuNodeForm()
+        public string URL = "";
+        public OpenWebsiteNodeForm()
         {
             InitializeComponent();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MENU_NAME = textBox1.Text;
-            NUM_OPTIONS = (int) numericUpDown1.Value;
+            URL = textBox1.Text;
             Close();
+        }
+
+        public void BeginEdit()
+        {
+            button1.Text = "Save Node";
+        }
+
+        public void EndEdit()
+        {
+            button1.Text = "Add Node";
         }
     }
 }

@@ -3,6 +3,7 @@ using Northwoods.Go.Layouts;
 using Northwoods.Go.Models;
 using Northwoods.Go.Tools;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using Brush = Northwoods.Go.Brush;
@@ -15,15 +16,33 @@ namespace Telephone_IVR
     {
         Diagram diagram;
         int nodeCount = 0;
-        int portCount = 0;
+        Dictionary<int, Form> nodeForms = new Dictionary<int, Form>();
+        string[] portColors =
+            {
+                "#FF0000", // red
+                "#00FF00", // green
+                "#0000FF", // blue
+                "#FFFF00", // yellow
+                "#00FFFF", // cyan
+                "#FF00FF", // magenta
+                "#FFA500", // orange
+                "#800080", // purple
+                "#BFFF00", // lime
+                "#40E0D0"  // turquoise
+            };
         public MainForm()
         {
             InitializeComponent();
-            diagram = diagramControl1.Diagram;
+
+            KeyPreview = true;
+            KeyDown += new KeyEventHandler(MainForm_KeyDown);
 
             contextMenuStrip1.Items.Insert(0, new ToolStripLabel("Add node") { Font = new System.Drawing.Font(DefaultFont, System.Drawing.FontStyle.Bold) });
             contextMenuStrip1.Items.Insert(1, new ToolStripSeparator());
             diagramControl1.ContextMenuStrip = contextMenuStrip1;
+
+            diagram = diagramControl1.Diagram;
+            diagram.ElementDoubleClicked += nodeDoubleClicked;
 
             SetupGraph();
             CreateNodes();
@@ -125,7 +144,7 @@ namespace Telephone_IVR
                 {
                     Font = new Font("Segoe UI", 10),
                     Stroke = "black",
-                }.Bind("Text")
+                }.Bind("Text", "Text")
             );
 
             var toneTemplate = new Panel(PanelType.Horizontal).Add(
@@ -133,7 +152,7 @@ namespace Telephone_IVR
                 {
                     Font = new Font("Segoe UI", 10),
                     Stroke = "black",
-                }.Bind("Text")
+                }.Bind("Text", "Text")
             );
 
             var menuPortTemplate = new Panel(PanelType.Spot).Add(
@@ -187,7 +206,7 @@ namespace Telephone_IVR
                                 Stretch = Stretch.Horizontal,
                                 Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Bold),
                                 Stroke = "black",
-                            }.Bind("Text", "Label")
+                            }.Bind("Text", "Text")
                         ),
                         // list of actions
                         new Panel(PanelType.Vertical)
@@ -278,7 +297,7 @@ namespace Telephone_IVR
                                 Stretch = Stretch.Horizontal,
                                 Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Regular),
                                 Background = "white"
-                            }.Bind("Text", "Label")
+                            }.Bind("Text", "Text")
                         ),
                         // bottom port panel
                         new Panel(PanelType.Horizontal)
@@ -348,7 +367,7 @@ namespace Telephone_IVR
                                 Stretch = Stretch.Horizontal,
                                 Font = new Font("Segoe UI", 12, Northwoods.Go.FontWeight.Regular),
                                 Background = "white"
-                            }.Bind("Text", "Label")
+                            }.Bind("Text", "Text")
                         ),
                         // bottom port panel
                         new Panel(PanelType.Horizontal)
@@ -495,12 +514,9 @@ namespace Telephone_IVR
         public void CreateNodes()
         {
             var nodeDataSource = new List<NodeData> {
-                MenuNode("Menu1", 3),
-                MenuNode("Menu2", 3)
             };
 
             var linkDataSource = new List<LinkData> {
-                new LinkData { From = 1, FromPort = "0", To = 2, ToPort = "In" }
             };
 
             // create the Model with the above data, and assign to the Diagram
@@ -516,31 +532,17 @@ namespace Telephone_IVR
         public NodeData MenuNode(string title, int numOptions)
         {
             if (numOptions > 10) return null;
-            string[] colors =
-            {
-                "#FF0000", // red
-                "#00FF00", // green
-                "#0000FF", // blue
-                "#FFFF00", // yellow
-                "#00FFFF", // cyan
-                "#FF00FF", // magenta
-                "#FFA500", // orange
-                "#800080", // purple
-                "#BFFF00", // lime
-                "#40E0D0"  // turquoise
-            };
             nodeCount++;
             var nodeData = new NodeData
             {
                 Key = nodeCount,
                 Category = "MENU",
-                Label = "Menu - " + title,
+                Text = "Menu - " + title,
                 Options = new List<FieldData>()
             };
             for (int i = 0; i < numOptions; i++)
             {
-                nodeData.Options.Add(new FieldData { Index = portCount.ToString(), Text = i.ToString(), Color = colors[i] });
-                portCount++;
+                nodeData.Options.Add(new FieldData { Index = i.ToString(), Text = i.ToString(), Color = portColors[i] });
             }
             return nodeData;
         }
@@ -548,13 +550,13 @@ namespace Telephone_IVR
         public NodeData OpenApplicationNode(string path)
         {
             nodeCount++;
-            return new NodeData { Key = nodeCount, Category = "OPEN_APPLICATION", Label = path };
+            return new NodeData { Key = nodeCount, Category = "OPEN_APPLICATION", Text = path };
         }
 
         public NodeData OpenWebsiteNode(string url)
         {
             nodeCount++;
-            return new NodeData { Key = nodeCount, Category = "OPEN_WEBSITE", Label = url };
+            return new NodeData { Key = nodeCount, Category = "OPEN_WEBSITE", Text = url };
         }
 
         public NodeData PlayToneSequenceNode(List<string> sequence)
@@ -574,24 +576,24 @@ namespace Telephone_IVR
             return new NodeData { Key = nodeCount, Category = "TERMINAL", Text = personName };
         }
 
-        private void exportCallGraphToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExportCallGraph()
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Filter = "Json file|*.json";
-            saveFileDialog1.Title = "Save flowchart";
+            saveFileDialog1.Title = "Export call graph";
             saveFileDialog1.ShowDialog();
             if (saveFileDialog1.FileName == "") return;
             string savedFlowchart = diagram.Model.ToJson();
             File.WriteAllText(saveFileDialog1.FileName, savedFlowchart);
-            MessageBox.Show("Saved flowchart to " + saveFileDialog1.FileName, "Saved flowchart", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Exported call graph to " + saveFileDialog1.FileName, "Exported call graph", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void importCallGraphToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ImportCallGraph()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
             {
                 Filter = "Json files (*.json)|*.json",
-                Title = "Open flowchart"
+                Title = "Import call graph"
             };
             if (openFileDialog.ShowDialog() != DialogResult.OK) return;
             try
@@ -607,36 +609,155 @@ namespace Telephone_IVR
             }
         }
 
+        private void exportCallGraphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportCallGraph();
+        }
+
+        private void importCallGraphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ImportCallGraph();
+        }
+
         private void menuNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NewMenuNodeForm form = new NewMenuNodeForm();
+            MenuNodeForm form = new MenuNodeForm();
             form.ShowDialog();
             if (form.MENU_NAME.Trim() != "")
+            {
                 diagram.Model.AddNodeData(MenuNode(form.MENU_NAME, form.NUM_OPTIONS));
+                nodeForms.Add(nodeCount, form);
+            }
         }
 
         private void openWebsiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NewOpenWebsiteNodeForm form = new NewOpenWebsiteNodeForm();
+            OpenWebsiteNodeForm form = new OpenWebsiteNodeForm();
             form.ShowDialog();
             if (form.URL.Trim() != "")
+            {
                 diagram.Model.AddNodeData(OpenWebsiteNode(form.URL));
+                nodeForms.Add(nodeCount, form);
+            }
         }
 
         private void openApplicationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NewOpenApplicationNodeForm form = new NewOpenApplicationNodeForm();
+            OpenApplicationNodeForm form = new OpenApplicationNodeForm();
             form.ShowDialog();
             if (form.PATH.Trim() != "")
+            {
                 diagram.Model.AddNodeData(OpenApplicationNode(form.PATH));
+                nodeForms.Add(nodeCount, form);
+            }
         }
 
         private void playToneSequenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NewPlayToneSequenceNodeForm form = new NewPlayToneSequenceNodeForm();
+            PlayToneSequenceNodeForm form = new PlayToneSequenceNodeForm();
             form.ShowDialog();
             if (form.TONE_SEQUENCE.Count > 0)
+            {
                 diagram.Model.AddNodeData(PlayToneSequenceNode(form.TONE_SEQUENCE));
+                nodeForms.Add(nodeCount, form);
+            }
+        }
+
+        void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Ctrl-S Save
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+                ExportCallGraph();
+            }
+            // Ctrl-O open
+            if (e.Control && e.KeyCode == Keys.O)
+            {
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+                ImportCallGraph();
+            }
+        }
+
+        private void nodeDoubleClicked(object sender, DiagramEvent e)
+        {
+            var part = (e.Subject as GraphObject).Part;
+            if (part is Link) return;
+            NodeData data = (NodeData)diagram.Model.FindNodeDataForKey(part.Key);
+            if (data.Category.Equals("MENU"))
+            {
+                MenuNodeForm form = (MenuNodeForm)nodeForms[data.Key];
+                form.BeginEdit();
+                form.ShowDialog();
+                if (form.MENU_NAME.Trim() != "")
+                {
+                    Node node = diagram.FindNodeForKey(data.Key);
+                    List<FieldData> options = new List<FieldData>();
+                    if (form.NUM_OPTIONS > 10) return;
+                    for (int i = 0; i < form.NUM_OPTIONS; i++)
+                    {
+                        options.Add(new FieldData { Index = i.ToString(), Text = i.ToString(), Color = portColors[i] });
+                    }
+
+                    diagram.Model.Commit((m) =>
+                    {
+                        m.Set(node.Data, "Text", form.MENU_NAME);
+                        m.Set(node.Data, "Options", options);
+                    });
+                }
+                form.EndEdit();
+            }
+            if (data.Category.Equals("OPEN_WEBSITE"))
+            {
+                OpenWebsiteNodeForm form = (OpenWebsiteNodeForm)nodeForms[data.Key];
+                form.BeginEdit();
+                form.ShowDialog();
+                if (form.URL.Trim() != "")
+                {
+                    Node node = diagram.FindNodeForKey(data.Key);
+                    diagram.Model.Commit((m) =>
+                    {
+                        m.Set(node.Data, "Text", form.URL);
+                    });
+                }
+                form.EndEdit();
+            }
+            if (data.Category.Equals("OPEN_APPLICATION"))
+            {
+                OpenApplicationNodeForm form = (OpenApplicationNodeForm)nodeForms[data.Key];
+                form.BeginEdit();
+                form.ShowDialog();
+                if (form.PATH.Trim() != "")
+                {
+                    Node node = diagram.FindNodeForKey(data.Key);
+                    diagram.Model.Commit((m) =>
+                    {
+                        m.Set(node.Data, "Text", form.PATH);
+                    });
+                }
+                form.EndEdit();
+            }
+            if (data.Category.Equals("PLAY_TONE_SEQUENCE"))
+            {
+                PlayToneSequenceNodeForm form = (PlayToneSequenceNodeForm)nodeForms[data.Key];
+                form.BeginEdit();
+                form.ShowDialog();
+                if (form.TONE_SEQUENCE.Count > 0)
+                {
+                    Node node = diagram.FindNodeForKey(data.Key);
+                    List<FieldData> tones = new List<FieldData>();
+                    for (int i = 0; i < form.TONE_SEQUENCE.Count; i += 2)
+                    {
+                        tones.Add(new FieldData { Text = form.TONE_SEQUENCE[i].ToString() + "Hz - " + form.TONE_SEQUENCE[i + 1].ToString() + "ms" });
+                    }
+                    Console.WriteLine(tones.Count);
+                    diagram.Model.Commit((m) =>
+                    {
+                        m.Set(node.Data, "Options", tones);
+                    });
+                }
+                form.EndEdit();
+            }
         }
     }
 
@@ -644,7 +765,7 @@ namespace Telephone_IVR
 
     public class NodeData : Model.NodeData
     {
-        public string Label { get; set; }
+        public string Text { get; set; }
         public List<FieldData> Options { get; set; }
     }
 
