@@ -118,14 +118,8 @@ namespace Telephone_IVR
 
             diagram.ToolManager.MouseWheelBehavior = WheelMode.Zoom;
             diagram.AllowCopy = false;
-            diagram.ToolManager.DraggingTool.DragsTree = true;
+            diagram.ToolManager.DraggingTool.DragsTree = false;
             diagram.CommandHandler.DeletesTree = true;
-            diagram.Layout = new TreeLayout
-            {
-                Angle = 90, // make tree vertical instead of horizontal
-                Arrangement = TreeArrangement.FixedRoots
-            }
-            ;
             diagram.UndoManager.IsEnabled = true;
 
             var greengrad = new Brush(new LinearGradientPaint(new Dictionary<float, string> {
@@ -170,7 +164,8 @@ namespace Telephone_IVR
             diagram.NodeTemplateMap.Add("REGISTERED_NUMBER", new Node(PanelType.Vertical)
             {
                 SelectionElementName = "Body"
-            }.Add(
+            }.Bind(new Northwoods.Go.Models.Binding("Location", "Location").MakeTwoWay())
+            .Add(
                 new Panel(PanelType.Auto)
                 {
                     Name = "BODY"
@@ -226,7 +221,8 @@ namespace Telephone_IVR
             diagram.NodeTemplateMap.Add("MENU", new Node(PanelType.Vertical)
             {
                 SelectionElementName = "BODY"
-            }.Add(
+            }.Bind(new Northwoods.Go.Models.Binding("Location", "Location").MakeTwoWay())
+            .Add(
                 // the main body consists of a Rectangle surrounding nested Panels
                 new Panel(PanelType.Auto)
                 {
@@ -310,7 +306,8 @@ namespace Telephone_IVR
             diagram.NodeTemplateMap.Add("OPEN_WEBSITE", new Node(PanelType.Vertical)
             {
                 SelectionElementName = "Body"
-            }.Add(
+            }.Bind(new Northwoods.Go.Models.Binding("Location", "Location").MakeTwoWay())
+            .Add(
                 new Panel(PanelType.Auto)
                 {
                     Name = "BODY"
@@ -380,7 +377,8 @@ namespace Telephone_IVR
             diagram.NodeTemplateMap.Add("OPEN_APPLICATION", new Node(PanelType.Vertical)
             {
                 SelectionElementName = "Body"
-            }.Add(
+            }.Bind(new Northwoods.Go.Models.Binding("Location", "Location").MakeTwoWay())
+            .Add(
                 new Panel(PanelType.Auto)
                 {
                     Name = "BODY"
@@ -450,7 +448,8 @@ namespace Telephone_IVR
             diagram.NodeTemplateMap.Add("PLAY_TONE_SEQUENCE", new Node(PanelType.Vertical)
             {
                 SelectionElementName = "BODY"
-            }.Add(
+            }.Bind(new Northwoods.Go.Models.Binding("Location", "Location").MakeTwoWay())
+            .Add(
                 // the main body consists of a Rectangle surrounding nested Panels
                 new Panel(PanelType.Auto)
                 {
@@ -541,21 +540,6 @@ namespace Telephone_IVR
                 )
             )
             );
-
-            diagram.NodeTemplateMap.Add("TERMINAL", new Node(PanelType.Spot).Add(
-              new Shape("Circle")
-              {
-                  Width = 55,
-                  Height = 55,
-                  Fill = greengrad,
-                  Stroke = null
-              },
-              new TextBlock
-              {
-                  Font = new Font("Segoe UI", 10, Northwoods.Go.FontWeight.Bold),
-                  Stroke = "black",
-              }.Bind("Text")
-            ));
 
             diagram.LinkTemplate = new Link
             {
@@ -904,6 +888,8 @@ namespace Telephone_IVR
     {
         public string Text { get; set; }
         public List<FieldData> Options { get; set; }
+
+        public Northwoods.Go.Point Location { get; set; }
     }
 
     public class LinkData : Model.LinkData

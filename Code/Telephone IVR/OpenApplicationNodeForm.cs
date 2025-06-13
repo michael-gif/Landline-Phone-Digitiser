@@ -25,7 +25,7 @@ namespace Telephone_IVR
             OpenFileDialog openFileDialog = new OpenFileDialog()
             {
                 FileName = "Select an executable",
-                Filter = "EXE files (*.exe)|*.exe|Shortcut files (*.lnk)|*.lnk",
+                Filter = "EXE files (*.exe)|*.exe|Shortcut (*.lnk)|*.lnk|Internet shortcuts(*.url)|*.url",
                 Title = "Open executable file"
             };
             if (openFileDialog.ShowDialog() == DialogResult.OK)
