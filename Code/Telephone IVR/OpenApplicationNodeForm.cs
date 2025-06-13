@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Telephone_IVR
 {
@@ -16,6 +17,7 @@ namespace Telephone_IVR
         public OpenApplicationNodeForm()
         {
             InitializeComponent();
+            textBox1.KeyPress += new KeyPressEventHandler(CheckEnterKeyPress);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -38,6 +40,11 @@ namespace Telephone_IVR
             Close();
         }
 
+        public void LoadData(string path)
+        {
+            textBox1.Text = path;
+        }
+
         public void BeginEdit()
         {
             button1.Text = "Save Node";
@@ -46,6 +53,19 @@ namespace Telephone_IVR
         public void EndEdit()
         {
             button1.Text = "Add Node";
+        }
+
+        private void OpenApplicationNodeForm_Shown(object sender, EventArgs e)
+        {
+            textBox1.Focus();
+        }
+
+        private void CheckEnterKeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                button1.PerformClick();
+            }
         }
     }
 }

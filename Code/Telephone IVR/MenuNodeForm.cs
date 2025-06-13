@@ -17,6 +17,7 @@ namespace Telephone_IVR
         public MenuNodeForm()
         {
             InitializeComponent();
+            textBox1.KeyPress += new KeyPressEventHandler(CheckEnterKeyPress);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -24,6 +25,12 @@ namespace Telephone_IVR
             MENU_NAME = textBox1.Text;
             NUM_OPTIONS = (int) numericUpDown1.Value;
             Close();
+        }
+
+        public void LoadData(string menuName, int numOptions)
+        {
+            textBox1.Text = menuName;
+            numericUpDown1.Value = numOptions;
         }
 
         public void BeginEdit()
@@ -34,6 +41,14 @@ namespace Telephone_IVR
         public void EndEdit()
         {
             button1.Text = "Add Node";
+        }
+
+        private void CheckEnterKeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                button1.PerformClick();
+            }
         }
     }
 }

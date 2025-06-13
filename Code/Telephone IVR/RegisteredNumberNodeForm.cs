@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace Telephone_IVR
 {
-    public partial class OpenWebsiteNodeForm : Form
+    public partial class RegisteredNumberNodeForm : Form
     {
-        public string URL = "";
-        public OpenWebsiteNodeForm()
+        public string NUMBER = "";
+        public RegisteredNumberNodeForm()
         {
             InitializeComponent();
             textBox1.KeyPress += new KeyPressEventHandler(CheckEnterKeyPress);
@@ -21,13 +21,13 @@ namespace Telephone_IVR
 
         private void button1_Click(object sender, EventArgs e)
         {
-            URL = textBox1.Text;
+            NUMBER = textBox1.Text;
             Close();
         }
 
-        public void LoadData(string url)
+        public void LoadData(string path)
         {
-            textBox1.Text = url;
+            textBox1.Text = path;
         }
 
         public void BeginEdit()
@@ -40,7 +40,7 @@ namespace Telephone_IVR
             button1.Text = "Add Node";
         }
 
-        private void OpenWebsiteNodeForm_Shown(object sender, EventArgs e)
+        private void RegisteredNumberNodeForm_Shown(object sender, EventArgs e)
         {
             textBox1.Focus();
         }

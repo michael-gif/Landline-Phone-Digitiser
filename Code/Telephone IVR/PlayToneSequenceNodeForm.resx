@@ -121,7 +121,7 @@
   <data name="addToneButton.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAMIAAADCCAIAAACUg4pmAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wAAADsABataJCQAAZVdJREFUeF7tfQd8HdWV96g/dckFU0M2WZLN7qbtbpLNZjebLcl+C7b0epFkmxbK
+        vAAADrwBlbxySQAAZVdJREFUeF7tfQd8HdWV96g/dckFU0M2WZLN7qbtbpLNZjebLcl+C7b0epFkmxbK
         QhLIkoRAQkLypZIGIflCANvqsurrRcKmmGIMxkDoGNvYxl2y6tPr9/ufc+c9PT3JtmRkWw66v79GM3fm
         zdx77v+ec26ZO4r48woJIeIJEeMd+sNeVIgIouKRSCgioiERHRbRARE5KMJ7RWinGHtBHHlK7HlEbPeK
         l7qjW5tHn7i/f8PvDvp/u9977wEfdrDFPvD7A/77Dm9oGnqqK/RCr9j+pNi3VRx+SRx9U4zuFsG9YuyI
@@ -559,7 +559,7 @@
   <data name="deleteToneButton.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAMMAAADDCAIAAACwHTL9AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wAAADsABataJCQAAWBRJREFUeF7tvQdgZFd5NrzASlPunSJp114bQyjGuytNL9I2V4qJqUkwCSWmJBAg
+        vAAADrwBlbxySQAAWBRJREFUeF7tvQdgZFd5NrzASlPunSJp114bQyjGuytNL9I2V4qJqUkwCSWmJBAg
         yUdoIYZQQsL3AykQCO0jQGiGUG1ct/fee9Gu2nRNkzSj6TPnf9733BmNpN31LutdG3nOPnt177l3Zu59
         z3Pfcuo8McdSTdSqolbTjnAoapVqMSfKBVEpEbBTmBT5jJicEGMZkRgX4aQYioqTw2LPSbFhj3hki/j5
         WvHDR8W3fyG++hPx7z9k/Ej8+0/E138tvvNb8eP14sGdYu0hsfO0OBoQ50ZFPCfSOTGeE9mcKPGvVAu1
@@ -938,4 +938,10 @@
         /z+82drYyvUQKwAAAABJRU5ErkJggg==
 </value>
   </data>
+  <metadata name="Frequency.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Duration.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
 </root>

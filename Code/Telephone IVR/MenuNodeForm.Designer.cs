@@ -81,11 +81,11 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
-            // NewMenuNodeForm
+            // MenuNodeForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(251, 90);
+            ClientSize = new Size(257, 90);
             Controls.Add(button1);
             Controls.Add(label2);
             Controls.Add(numericUpDown1);
@@ -93,7 +93,7 @@
             Controls.Add(textBox1);
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "NewMenuNodeForm";
+            Name = "MenuNodeForm";
             ShowIcon = false;
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterScreen;

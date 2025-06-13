@@ -72,21 +72,22 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
-            // NewOpenApplicationNodeForm
+            // OpenApplicationNodeForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(187, 65);
+            ClientSize = new Size(192, 65);
             Controls.Add(button2);
             Controls.Add(textBox1);
             Controls.Add(button1);
             Controls.Add(label1);
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "NewOpenApplicationNodeForm";
+            Name = "OpenApplicationNodeForm";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Add an application node";
+            Shown += OpenApplicationNodeForm_Shown;
             ResumeLayout(false);
             PerformLayout();
         }

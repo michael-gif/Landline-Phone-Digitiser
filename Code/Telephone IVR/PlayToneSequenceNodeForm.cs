@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Telephone_IVR
 {
@@ -20,28 +21,46 @@ namespace Telephone_IVR
 
         private void button1_Click(object sender, EventArgs e)
         {
-            listView1.Items.Add("500").SubItems.Add("100");
-            listView1.Items[listView1.Items.Count - 1].Focused = true;
-            listView1.Items[listView1.Items.Count - 1].Selected = true;
+            var row = new DataGridViewRow();
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = 500 });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = 100 });
+            dataGridView1.Rows.Add(row);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedIndices.Count == 0) return;
-            int actionIndex = listView1.SelectedIndices[0];
-            listView1.Items.RemoveAt(actionIndex);
+            if (dataGridView1.SelectedCells.Count == 0) return;
+            DataGridViewCell cell = dataGridView1.SelectedCells[0];
+            int row = cell.RowIndex;
+            dataGridView1.Rows.RemoveAt(row);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             TONE_SEQUENCE.Clear();
-            foreach (ListViewItem tone in listView1.Items)
+            foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                var duration = tone.SubItems[0];
-                TONE_SEQUENCE.Add(tone.Text);
-                TONE_SEQUENCE.Add(duration.Text);
+                DataGridViewCell toneCell = row.Cells[0];
+                DataGridViewCell durationCell = row.Cells[0];
+                if (toneCell.Value == null) continue;
+                string tone = toneCell.Value.ToString();
+                string duration = durationCell.Value.ToString();
+                TONE_SEQUENCE.Add(tone);
+                TONE_SEQUENCE.Add(duration);
             }
             Close();
+        }
+
+        public void LoadData(List<string> rawTones)
+        {
+            dataGridView1.Rows.Clear();
+            for (int i = 0; i < rawTones.Count; i += 2)
+            {
+                var row = new DataGridViewRow();
+                row.Cells.Add(new DataGridViewTextBoxCell { Value = rawTones[i] });
+                row.Cells.Add(new DataGridViewTextBoxCell { Value = rawTones[i + 1] });
+                dataGridView1.Rows.Add(row);
+            }
         }
 
         public void BeginEdit()
