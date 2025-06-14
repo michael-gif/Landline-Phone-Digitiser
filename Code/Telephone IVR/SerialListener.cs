@@ -87,10 +87,6 @@ namespace Telephone_IVR
                     if (options.Contains(button))
                     {
                         List<Link> outputLinks = node.LinksConnected.Where(link => (int)link.FromNode.Key == (int)node.Key).ToList();
-                        foreach (var item in outputLinks)
-                        {
-                            Console.WriteLine($"{item.FromNode}:{item.FromPortId} ({item.FromNode.Category}) -> {item.ToNode} ({item.ToNode.Category})");
-                        }
                         Node nextNode = outputLinks.Where(link => link.FromPortId.Equals(button)).First().ToNode;
                         Console.WriteLine("MENU - Selected Item " + button);
                         return nextNode;
@@ -188,7 +184,6 @@ namespace Telephone_IVR
                         currentSequence = "";
                         if (foundSequence)
                         {
-                            Console.WriteLine("found sequence");
                             Node nextNodeToExecute = nodeToExecute;
                             while (true)
                             {
