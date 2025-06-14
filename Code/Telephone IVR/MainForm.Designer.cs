@@ -178,7 +178,7 @@
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "MainForm";
+            Text = "Telephone IVR";
             FormClosed += MainForm_FormClosed;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
