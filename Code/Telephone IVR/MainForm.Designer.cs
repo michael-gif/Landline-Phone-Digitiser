@@ -35,13 +35,15 @@
             exportModelToolStripMenuItem = new ToolStripMenuItem();
             exportCallGraphToolStripMenuItem = new ToolStripMenuItem();
             importCallGraphToolStripMenuItem = new ToolStripMenuItem();
-            runIVRMenuItem = new ToolStripMenuItem();
+            startIVRMenuItem = new ToolStripMenuItem();
             contextMenuStrip1 = new ContextMenuStrip(components);
             registeredNumberToolStripMenuItem = new ToolStripMenuItem();
             menuNodeToolStripMenuItem = new ToolStripMenuItem();
             openWebsiteToolStripMenuItem = new ToolStripMenuItem();
             openApplicationToolStripMenuItem = new ToolStripMenuItem();
             playToneSequenceToolStripMenuItem = new ToolStripMenuItem();
+            consoleTextBox = new TextBox();
+            clearConsoleButton = new Button();
             menuStrip1.SuspendLayout();
             contextMenuStrip1.SuspendLayout();
             SuspendLayout();
@@ -49,17 +51,17 @@
             // diagramControl1
             // 
             diagramControl1.AllowDrop = true;
+            diagramControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             diagramControl1.BackColor = Color.White;
-            diagramControl1.Dock = DockStyle.Fill;
             diagramControl1.Location = new Point(0, 24);
             diagramControl1.Name = "diagramControl1";
-            diagramControl1.Size = new Size(800, 426);
+            diagramControl1.Size = new Size(478, 426);
             diagramControl1.TabIndex = 0;
             diagramControl1.Text = "diagramControl1";
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { exportModelToolStripMenuItem, runIVRMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { exportModelToolStripMenuItem, startIVRMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -87,12 +89,15 @@
             importCallGraphToolStripMenuItem.Text = "Import Call Graph";
             importCallGraphToolStripMenuItem.Click += importCallGraphToolStripMenuItem_Click;
             // 
-            // runIVRMenuItem
+            // startIVRMenuItem
             // 
-            runIVRMenuItem.Name = "runIVRMenuItem";
-            runIVRMenuItem.Size = new Size(60, 20);
-            runIVRMenuItem.Text = "Run IVR";
-            runIVRMenuItem.Click += runIVRMenuItem_Click;
+            startIVRMenuItem.BackColor = Color.LimeGreen;
+            startIVRMenuItem.Font = new Font("Segoe UI Black", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            startIVRMenuItem.ForeColor = Color.White;
+            startIVRMenuItem.Name = "startIVRMenuItem";
+            startIVRMenuItem.Size = new Size(71, 20);
+            startIVRMenuItem.Text = "Start IVR";
+            startIVRMenuItem.Click += startIVRMenuItem_Click;
             // 
             // contextMenuStrip1
             // 
@@ -135,11 +140,38 @@
             playToneSequenceToolStripMenuItem.Text = "Play Tone Sequence";
             playToneSequenceToolStripMenuItem.Click += playToneSequenceToolStripMenuItem_Click;
             // 
+            // consoleTextBox
+            // 
+            consoleTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            consoleTextBox.BackColor = Color.Black;
+            consoleTextBox.ForeColor = Color.White;
+            consoleTextBox.Location = new Point(484, 24);
+            consoleTextBox.Multiline = true;
+            consoleTextBox.Name = "consoleTextBox";
+            consoleTextBox.ReadOnly = true;
+            consoleTextBox.ScrollBars = ScrollBars.Vertical;
+            consoleTextBox.Size = new Size(316, 393);
+            consoleTextBox.TabIndex = 2;
+            consoleTextBox.TextChanged += consoleTextBox_TextChanged;
+            // 
+            // clearConsoleButton
+            // 
+            clearConsoleButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            clearConsoleButton.Location = new Point(483, 417);
+            clearConsoleButton.Name = "clearConsoleButton";
+            clearConsoleButton.Size = new Size(317, 33);
+            clearConsoleButton.TabIndex = 3;
+            clearConsoleButton.Text = "Clear Console";
+            clearConsoleButton.UseVisualStyleBackColor = true;
+            clearConsoleButton.Click += clearConsoleButton_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(clearConsoleButton);
+            Controls.Add(consoleTextBox);
             Controls.Add(diagramControl1);
             Controls.Add(menuStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -160,7 +192,7 @@
         private Northwoods.Go.WinForms.DiagramControl diagramControl1;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem exportModelToolStripMenuItem;
-        private ToolStripMenuItem runIVRMenuItem;
+        private ToolStripMenuItem startIVRMenuItem;
         private ToolStripMenuItem exportCallGraphToolStripMenuItem;
         private ToolStripMenuItem importCallGraphToolStripMenuItem;
         private ContextMenuStrip contextMenuStrip1;
@@ -169,5 +201,7 @@
         private ToolStripMenuItem openApplicationToolStripMenuItem;
         private ToolStripMenuItem playToneSequenceToolStripMenuItem;
         private ToolStripMenuItem registeredNumberToolStripMenuItem;
+        private TextBox consoleTextBox;
+        private Button clearConsoleButton;
     }
 }

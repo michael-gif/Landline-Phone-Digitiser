@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Font = Northwoods.Go.Font;
 using Panel = Northwoods.Go.Panel;
 
@@ -34,6 +35,8 @@ namespace Telephone_IVR
         public MainForm()
         {
             InitializeComponent();
+
+            Console.SetOut(new MultiTextWriter(new ControlWriter(consoleTextBox), Console.Out));
 
             KeyPreview = true;
             KeyDown += new KeyEventHandler(MainForm_KeyDown);
@@ -811,22 +814,25 @@ namespace Telephone_IVR
             }
         }
 
-        private void runIVRMenuItem_Click(object sender, EventArgs e)
+        private void startIVRMenuItem_Click(object sender, EventArgs e)
         {
             if (SerialListener.running)
             {
-                runIVRMenuItem.Enabled = false;
+                startIVRMenuItem.Enabled = false;
                 SerialListener.Stop();
-                runIVRMenuItem.Enabled = true;
-                runIVRMenuItem.Text = "Start IVR";
+                startIVRMenuItem.Enabled = true;
+                startIVRMenuItem.Text = "Start IVR";
+                startIVRMenuItem.BackColor = Color.LimeGreen;
                 MessageBox.Show("IVR Stopped");
             }
             else
             {
-                runIVRMenuItem.Enabled = false;
+                startIVRMenuItem.Enabled = false;
+                consoleTextBox.Clear();
                 SerialListener.Start(diagram);
-                runIVRMenuItem.Enabled = true;
-                runIVRMenuItem.Text = "Stop IVR";
+                startIVRMenuItem.Enabled = true;
+                startIVRMenuItem.Text = "Stop IVR";
+                startIVRMenuItem.BackColor = Color.Red;
                 MessageBox.Show("IVR Started");
             }
         }
@@ -834,6 +840,17 @@ namespace Telephone_IVR
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             SerialListener.Stop();
+        }
+
+        private void consoleTextBox_TextChanged(object sender, EventArgs e)
+        {
+            consoleTextBox.SelectionStart = consoleTextBox.Text.Length;
+            consoleTextBox.ScrollToCaret();
+        }
+
+        private void clearConsoleButton_Click(object sender, EventArgs e)
+        {
+            consoleTextBox.Clear();
         }
     }
 
