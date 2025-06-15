@@ -97,7 +97,7 @@ namespace Telephone_IVR
                         Console.WriteLine("Invalid menu item");
                         SendToneSequence(new List<(int, int)> { (950, 330), (1400, 330), (1800, 330) });
                     }
-                        break;
+                    break;
                 case "OPEN_WEBSITE":
                     string url = data.Text;
                     Process.Start(new ProcessStartInfo
