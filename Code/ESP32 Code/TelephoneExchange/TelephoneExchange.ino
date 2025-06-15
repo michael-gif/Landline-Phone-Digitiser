@@ -93,10 +93,11 @@ String getKeypadButtonPressed(int freq1, int freq2) {
 
 void sendToneSequence(std::vector<int> values) {
   for (int i = 0; i < values.size(); i+=2) {
+    ledcAttach(15, 500, 8);
     ledcChangeFrequency(15, values[i], 8);
     ledcWrite(15, 128);
     delay(values[i+1]);
-    ledcWrite(15, 0);
+    ledcDetach(15);
   }
   delay(20);
   Serial.println("Sent tone sequence");
@@ -245,8 +246,6 @@ void setup() {
   pinMode(A4, INPUT); // dtmf detection
   pinMode(14, INPUT); // off hook detection
   pinMode(21, OUTPUT); // indicator LED
-
-  ledcAttach(15, 500, 8); // PWM for tone sequences
 
   if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
     Serial.println("Woke from deep sleep (Phone off hook)");

@@ -90,9 +90,14 @@ namespace Telephone_IVR
                         List<Link> outputLinks = node.LinksConnected.Where(link => (int)link.FromNode.Key == (int)node.Key).ToList();
                         Node nextNode = outputLinks.Where(link => link.FromPortId.Equals(button)).First().ToNode;
                         Console.WriteLine("Executing: MENU - Selected Item " + button);
+                        SendToneSequence(new List<(int, int)> { (440, 150), (660, 150), (880, 330) });
                         return nextNode;
+                    } else
+                    {
+                        Console.WriteLine("Invalid menu item");
+                        SendToneSequence(new List<(int, int)> { (950, 330), (1400, 330), (1800, 330) });
                     }
-                    break;
+                        break;
                 case "OPEN_WEBSITE":
                     string url = data.Text;
                     Process.Start(new ProcessStartInfo
