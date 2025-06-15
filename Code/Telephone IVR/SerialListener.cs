@@ -89,7 +89,7 @@ namespace Telephone_IVR
                     {
                         List<Link> outputLinks = node.LinksConnected.Where(link => (int)link.FromNode.Key == (int)node.Key).ToList();
                         Node nextNode = outputLinks.Where(link => link.FromPortId.Equals(button)).First().ToNode;
-                        Console.WriteLine("MENU - Selected Item " + button);
+                        Console.WriteLine("Executing: MENU - Selected Item " + button);
                         return nextNode;
                     }
                     break;
@@ -100,7 +100,7 @@ namespace Telephone_IVR
                         FileName = url,
                         UseShellExecute = true
                     });
-                    Console.WriteLine("OPEN_WEBSITE: " + url);
+                    Console.WriteLine("Executing: OPEN_WEBSITE: " + url);
                     return GetNextNode(node);
                 case "OPEN_APPLICATION":
                     string path = data.Text;
@@ -109,7 +109,7 @@ namespace Telephone_IVR
                         FileName = path,
                         UseShellExecute = true
                     });
-                    Console.WriteLine("OPEN_APPLICATION: " + path);
+                    Console.WriteLine("Executing: OPEN_APPLICATION: " + path);
                     return GetNextNode(node);
                 case "PLAY_TONE_SEQUENCE":
                     List<string> rawSequence = data.Options.Select(item => item.Text).ToList();
@@ -120,7 +120,7 @@ namespace Telephone_IVR
                         preparedSequence.Add(( Int32.Parse(parts[0].Replace("Hz", "")), Int32.Parse(parts[1].Replace("ms", "")) ));
                     }
                     SendToneSequence(preparedSequence);
-                    Console.WriteLine("PLAY_TONE_SEQUENCE");
+                    Console.WriteLine("Executing: PLAY_TONE_SEQUENCE");
                     return GetNextNode(node);
 
             }
@@ -139,7 +139,6 @@ namespace Telephone_IVR
                     Console.WriteLine(e.StackTrace);
                     break;
                 }
-                Console.WriteLine(data);
 
                 // only listen for numbers if the phone is off hook
                 if (data == "OFF_HOOK")
