@@ -54,6 +54,8 @@ bool isPhoneOnHook() {
       detectedFrequencyCount = 0; // When the phone goes back on hook there is a spike in frequencies which increments detectedFrequencyCount. so reset it
       delay(50); // debounce
       Serial.println("ON_HOOK");
+      esp_sleep_enable_ext0_wakeup(GPIO_NUM_14, 1); // wake on HIGH
+      esp_deep_sleep_start();
     }
   }
   return !offHook;
@@ -245,6 +247,15 @@ void setup() {
   pinMode(21, OUTPUT); // indicator LED
 
   ledcAttach(15, 500, 8); // PWM for tone sequences
+
+  if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
+    Serial.println("Woke from deep sleep (Phone off hook)");
+  }
+
+  if (digitalRead(14) == LOW) {
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_14, 1); // wake on HIGH
+    esp_deep_sleep_start();
+  }
 }
 
 void loop() {
