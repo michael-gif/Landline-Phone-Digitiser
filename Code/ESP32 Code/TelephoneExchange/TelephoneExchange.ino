@@ -89,13 +89,14 @@ String getKeypadButtonPressed(int freq1, int freq2) {
   }
 }
 
-void sendToneSequence(std::vector<int> frequencies, std::vector<int> durationsMillis) {
-  for (int i = 0; i < frequencies.size(); i++) {
-    ledcChangeFrequency(15, frequencies[i], 8);
+void sendToneSequence(std::vector<int> values) {
+  for (int i = 0; i < values.size(); i+=2) {
+    ledcChangeFrequency(15, values[i], 8);
     ledcWrite(15, 128);
-    delay(durationsMillis[i]);
+    delay(values[i+1]);
     ledcWrite(15, 0);
   }
+  delay(20);
   Serial.println("Sent tone sequence");
 }
 
@@ -115,24 +116,45 @@ std::vector<String> splitString(String& s, char delimiter) {
   return tokens;
 }
 
+String readSerial() {
+  char startMarker = '<';
+  char endMarker = '>';
+  bool receiving = false;
+  String data = "";
+  while (Serial.available() > 0) {
+    char receivedChar = Serial.read();
+
+    if (receiving) {
+      if (receivedChar == endMarker) {
+        receiving = false;
+        break;
+      } else {
+        data += receivedChar;
+      }
+    }
+
+    if (receivedChar == startMarker) {
+      receiving = true;
+    }
+  }
+  return data;
+}
+
 void checkForIVRCommands() {
-  if (Serial.available() > 0)
+  if (Serial.available())
   {
-    String ivr_command = Serial.readString();
+    String ivr_command = readSerial();
     std::vector<String> parts = splitString(ivr_command, '_');
     if (parts[0] == "TONESEQUENCE") {
       // create tone sequence as 2 vectors with the frequencies and durations
-      std::vector<int> tones;
-      std::vector<int> durations;
-      for (int i = 1; i < parts.size(); i+=2) {
-        int tone = parts[i].toInt();
-        int duration = parts[i+1].toInt();
-        tones.emplace_back(tone);
-        durations.emplace_back(duration);
+      std::vector<int> values;
+      for (int i = 1; i < parts.size(); i++) {
+        int value = parts[i].toInt();
+        values.emplace_back(value);
       }
 
       // send the sequence to the phone
-      sendToneSequence(tones, durations);
+      sendToneSequence(values);
     }
   }
 }

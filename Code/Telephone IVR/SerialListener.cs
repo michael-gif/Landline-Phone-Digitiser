@@ -28,12 +28,13 @@ namespace Telephone_IVR
 
         static void SendToneSequence(List<(int, int)> tones)
         {
-            string message = "TONESEQUENCE_";
+            string message = "<TONESEQUENCE_";
             foreach (var tone in tones)
             {
                 message += tone.Item1.ToString() + "_" + tone.Item2.ToString() + "_";
             }
-            message = message.TrimEnd('_');
+            message = message[..^1];
+            message += ">";
             ser.Write(message);
 
             while (true)
@@ -138,6 +139,7 @@ namespace Telephone_IVR
                     Console.WriteLine(e.StackTrace);
                     break;
                 }
+                Console.WriteLine(data);
 
                 // only listen for numbers if the phone is off hook
                 if (data == "OFF_HOOK")
