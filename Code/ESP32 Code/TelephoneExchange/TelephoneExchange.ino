@@ -1,4 +1,5 @@
-#include <sstream>
+#include "driver/dac.h"
+#include <string>
 
 #define FFT_SAMPLE_COUNT 205
 #define SAMPLE_RATE 8000.0  // Hz
@@ -39,7 +40,7 @@ int goertzelMagnitude(const float* samples, int num_samples, float target_freq, 
 }
 
 bool isPhoneOnHook() {
-  bool offHook = digitalRead(14); // if pin 14 is high then phone is off hook. if pin 14 is low then phone is on hook
+  bool offHook = analogRead(14) > 64; // if pin 14 is high then phone is off hook. if pin 14 is low then phone is on hook
   if (offHook) {
     if (!ledOn) {
       digitalWrite(21, HIGH);
@@ -54,6 +55,8 @@ bool isPhoneOnHook() {
       detectedFrequencyCount = 0; // When the phone goes back on hook there is a spike in frequencies which increments detectedFrequencyCount. so reset it
       delay(50); // debounce
       Serial.println("ON_HOOK");
+      gpio_pullup_dis(GPIO_NUM_14);
+      gpio_pulldown_en(GPIO_NUM_14);
       esp_sleep_enable_ext0_wakeup(GPIO_NUM_14, 1); // wake on HIGH
       esp_deep_sleep_start();
     }
@@ -91,7 +94,7 @@ String getKeypadButtonPressed(int freq1, int freq2) {
   }
 }
 
-void sendToneSequence(std::vector<int> values) {
+void playToneSequence(std::vector<int> values) {
   for (int i = 0; i < values.size(); i+=2) {
     ledcAttach(15, 500, 8);
     ledcChangeFrequency(15, values[i], 8);
@@ -103,8 +106,8 @@ void sendToneSequence(std::vector<int> values) {
   Serial.println("Sent tone sequence");
 }
 
-std::vector<String> splitString(String& s, char delimiter) {
-  s.trim();
+std::vector<String> splitString(std::string& s, char delimiter) {
+  //s.trim();
   std::vector<String> tokens;
   String temp;
   for (int i = 0; i < s.length(); i++) {
@@ -119,20 +122,37 @@ std::vector<String> splitString(String& s, char delimiter) {
   return tokens;
 }
 
-String readSerial() {
+std::string serialInputBufferToString(std::vector<char> serialInputBuffer) {
+  std::string str(serialInputBuffer.begin(), serialInputBuffer.end());
+  return str;
+}
+
+int dataLength = 0;
+std::vector<char> serialInputBuffer;
+void readSerial() {
   char startMarker = '<';
-  char endMarker = '>';
   bool receiving = false;
-  String data = "";
+  String dataLengthString = "";
+  int serialInputBufferIndex = 0;
   while (Serial.available() > 0) {
     char receivedChar = Serial.read();
-
     if (receiving) {
-      if (receivedChar == endMarker) {
-        receiving = false;
-        break;
+      if (!dataLength) {
+        if (receivedChar == '_') {
+          dataLength = atoi(dataLengthString.c_str()) - dataLengthString.length() - 1;
+          serialInputBuffer.clear();
+          serialInputBuffer.resize(dataLength);
+          Serial.println("Read: " + String(dataLengthString.length()+1) + ", remaining: " + dataLength);
+        } else {
+          dataLengthString += receivedChar;
+        }
       } else {
-        data += receivedChar;
+        serialInputBuffer[serialInputBufferIndex] = receivedChar;
+        serialInputBufferIndex++;
+        if (serialInputBufferIndex == dataLength) {
+          Serial.println("Read " + String(dataLength) + " bytes");
+          return;
+        }
       }
     }
 
@@ -140,25 +160,108 @@ String readSerial() {
       receiving = true;
     }
   }
-  return data;
 }
 
-void checkForIVRCommands() {
-  if (Serial.available())
-  {
-    String ivr_command = readSerial();
-    std::vector<String> parts = splitString(ivr_command, '_');
-    if (parts[0] == "TONESEQUENCE") {
-      // create tone sequence as 2 vectors with the frequencies and durations
-      std::vector<int> values;
-      for (int i = 1; i < parts.size(); i++) {
-        int value = parts[i].toInt();
-        values.emplace_back(value);
-      }
+std::vector<char> dataBuffer;
+bool readSerial2() {
+  if (Serial.available() == 0) return false;
 
-      // send the sequence to the phone
-      sendToneSequence(values);
+  // get number of bytes to recieve
+  String dataLengthBuffer;
+  int dataLength = 0;
+  while (Serial.available() > 0) {
+    char c = Serial.read();
+    if (c == '_') {
+      dataLength = atoi(dataLengthBuffer.c_str());
+      break;
+    } else {
+      dataLengthBuffer += c;
     }
+  }
+
+  // prepare buffer
+  dataBuffer.clear();
+  dataBuffer.resize(dataLength);
+
+  // recieve data in packets of 120 bytes
+  int bytesReceived = 0;
+  while (bytesReceived < dataLength) {
+    int available = Serial.available();
+    if (!available) continue;
+    for (int i = 0; i < available; i++) {
+      dataBuffer[bytesReceived] = Serial.read();
+      bytesReceived++;
+    }
+    Serial.println("1"); // notify sender that the packet was received
+  }
+  return true;
+}
+
+String getSerialDataType() {
+  String keyword;
+  for (int i = 0; i < dataBuffer.size(); i++) {
+    char c = dataBuffer[i];
+    if (c == '_') return keyword;
+    keyword += c;
+  }
+  return keyword;
+}
+
+uint8_t* pcmData;     // Pointer to your PCM buffer
+volatile size_t pcmLen;     // Length of PCM buffer
+int pcmIndex = 0;
+hw_timer_t* timer = NULL;
+void IRAM_ATTR onTimer() {
+  dac_output_voltage(DAC_CHANNEL_1, pcmData[pcmIndex]);
+  pcmIndex++;
+  if (pcmIndex >= pcmLen) {
+    dac_output_voltage(DAC_CHANNEL_1, 0);
+    timerEnd(timer); // Stop when done
+    dac_output_disable(DAC_CHANNEL_1);
+    Serial.println("Played PCM data");
+  }
+}
+
+void playPCMData(uint8_t* data, size_t length, uint32_t sampleRate) {
+  pcmData = data;
+  pcmLen = length;
+  pcmIndex = 0;
+
+  dac_output_enable(DAC_CHANNEL_1);
+
+  int timerFrequency = 1000000;
+  timer = timerBegin(timerFrequency); // 80 MHz / 80 = 1 MHz tick
+  timerAttachInterrupt(timer, &onTimer);
+  timerAlarm(timer, timerFrequency / sampleRate, true, 0); // sampleRate Hz
+  Serial.println("Playing PCM data");
+}
+
+void checkForSerialData() {
+  long start = millis();
+  bool dataExists = readSerial2();
+  long duration = millis() - start;
+  if (!dataExists) return;
+
+  Serial.println("Recieved " + String(dataBuffer.size()) + " bytes after " + String(duration) + "ms");
+  String datatype = getSerialDataType();
+  Serial.println(datatype);
+  if (datatype == "TONESEQUENCE") {
+    // create tone sequence as 2 vectors with the frequencies and durations
+    std::string dataString = serialInputBufferToString(dataBuffer);
+    std::vector<String> parts = splitString(dataString, '_');
+    std::vector<int> values;
+    for (int i = 1; i < parts.size(); i++) {
+      int value = parts[i].toInt();
+      values.emplace_back(value);
+    }
+    Serial.println("Sending tones");
+
+    // send the sequence to the phone
+    playToneSequence(values);
+  }
+  if (datatype == "AUDIO") {
+    playPCMData((uint8_t*)dataBuffer.data() + 6, dataBuffer.size() - 6, 8000);
+    //delayMicroseconds(dataBuffer.size() * 125);
   }
 }
 
@@ -242,23 +345,27 @@ void dtmfDetection() {
 }
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(500000);
   pinMode(A4, INPUT); // dtmf detection
   pinMode(14, INPUT); // off hook detection
   pinMode(21, OUTPUT); // indicator LED
+  //pinMode(A1, OUTPUT);
 
+  // Send the ESP32 into sleep mode when the phone is on hook
   if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
     Serial.println("Woke from deep sleep (Phone off hook)");
   }
-
-  if (digitalRead(14) == LOW) {
+  if (analogRead(14) < 64) {
+    gpio_pullup_dis(GPIO_NUM_14);
+    gpio_pulldown_en(GPIO_NUM_14);
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_14, 1); // wake on HIGH
+    Serial.println("Sleep");
     esp_deep_sleep_start();
   }
 }
 
 void loop() {
   if (isPhoneOnHook()) return;
-  checkForIVRCommands();
+  checkForSerialData();
   dtmfDetection();
 }
