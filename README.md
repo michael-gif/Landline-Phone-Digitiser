@@ -680,5 +680,5 @@ With the updated ESP32 code and the new Python script, phone numbers and IVR sys
 Here is the full telephone exchange circuit:  
 ![Telephone Exchange Schematic](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/Telephone%20Exchange%20Schematic.png)
 
-And here is the breadboard circuit in real life:
+And here is the exchange circuit on a breadboard:
 ![Breadboard Circuit](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/breadboard_circuit.jpg)
