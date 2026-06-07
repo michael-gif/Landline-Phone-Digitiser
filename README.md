@@ -284,3 +284,6 @@ Schematic
 
 Breadboard implementation  
 ![Breadboard Circuit](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/breadboard_circuit_v2.jpg)
+
+# TODO
+- Write new software to send commands to and from the microcontroller using the new circuit
