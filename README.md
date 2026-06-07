@@ -4,7 +4,8 @@ Turn a landline phone into a usb device
 ### Contents
 - [Introduction](#introduction)
 - [Theory](#theory)
-  - [How the phone lines work](#phone-lines)
+  - [How the phone lines work (UK)](#phone-lines)
+  - [How a call is made](#phone-calls)
   - [How the phone works](#phones)
 - [Designing my own telephone exchange circuit (Version 1)](#design1)
   - [The plan](#the-plan)
