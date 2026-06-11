@@ -264,12 +264,12 @@ String getKeypadButtonPressed(int freq1, int freq2) {
 ```
 
 ### Superimpose AC signals onto the phone's input <a name="ac-superimposition-2"/>
-This part was tricky. I needed a circuit that could take 3.3V output from a microcontroller's gpio and combine it with the 12V input line into the phone. After some research I discovered you could bias the 3.3V output to 12V, but it I still couldn't figure out how to combine it with the phone's 12V input. I tried several combinations of resistors, capacitors and transistors to try and make this work. I was able to get it working with a series resistor and capacitor which connected to a 12V bias that the phone was in series with:  
+This part was tricky. I needed a circuit that could take 3.3V output from a microcontroller's gpio and combine it with the 12V input line into the phone. After some research I discovered you could bias the 3.3V output to 12V, but I still couldn't figure out how to combine it with the phone's 12V input. I tried several combinations of resistors, capacitors and transistors to try and make this work. I was able to get it working with a series resistor and capacitor which connected to a 12V bias that the phone was in series with:  
 ![AC superimposer circuit](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/ac_superimposer_circuit_v2a.png)
 
-The pink line is a 3.3V PWM signal. The green line is the the junction between R7 and C3, and the red line is the 12V line with the PWM signal superimposed onto it.
+The pink line is a 3.3V PWM signal. The green line is the junction between R7 and C3, and the red line is the 12V line with the PWM signal superimposed onto it.
 
-Although I wasn't happy with this. Having a single tiny capacitor between a sensitive 3.3V gpio pin and a beefy 12V didn't seem safe. I opted not to use this circuit and to design something better that could isolate the 12V line from the 3.3V gpio. After several days of thinking, testing and researching, I finally found my solution: the optocoupler.
+I wasn't happy with this. Having a single tiny capacitor between a sensitive 3.3V gpio pin and a beefy 12V line didn't seem safe. I opted not to use this circuit and to design something better that could isolate the 12V line from the 3.3V gpio. After several days of thinking, testing and researching, I finally found a solution: the optocoupler.
 
 An optocoupler is a device that can isolate high voltage from low voltage. And if you use it right, it can pass AC signals from one side to the other. Here is the new circuit using an optocoupler:  
 ![AC superimposer circuit](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/ac_superimposer_circuit_v2b.png)
@@ -279,7 +279,7 @@ The pink line is the 3.3V PWM signal. The green line is the optocoupler's output
 Testing of the optocoupler circuit showed it working perfectly. PWM signals from the Pico were being turned into superimposed signals on the phone's 12V input which were being isolated by the phone and sent to the handset speaker, making them audible when you put the handset to your ear. With some simple coding I was able to play the UK national anthem on the handset speaker by changing the frequency of the Pico's PWM output.
 
 ### Conclusion <a name="conclusion2"/>
-With the ESP32 code and the Python script, phone numbers and IVR systems can be created that allow the Vanguard to do many things. Such things involve opening websites, opening programs, sending emails, sending messages etc etc
+With the Pico code and a Python script, phone numbers and IVR systems can be created that allow the Vanguard to do many things. Such things involve opening websites, opening programs, sending emails, sending messages etc etc
 
 Schematic  
 ![Telephone Exchange Schematic](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/telephone_exchange_schematic_v2.png)
