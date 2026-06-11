@@ -16,13 +16,14 @@ Turn a landline phone into a usb device
   - [Detecting when the phone is off hook](#off-hook-detection)
   - [Improving the DTMF detection code](#code-improvements)
   - [Sending audio back to the phone](#ac-superimposition)
+  - [Writing the IVR software](#ivr-software)
+  - [Conclusion](#conclusion1)
 - [Designing my own telephone exchange circuit (Version 2)](#design2)
   - [The plan](#the-plan-2)
   - [Detect when the phone is off the hook](#off-hook-detection-2)
   - [Detect and decode dtmf tones](#dtmf-detection-2)
   - [Superimpose AC signals onto the phone's input](#ac-superimposition-2)
-- [Writing the IVR software](#ivr-software)
-- [Conclusion](#conclusion)
+  - [Conclusion](#conclusion2)
 
 ## Introduction <a name="introduction"/>
 This project converts an analog landline phone into usb landline device you can plug into your computer. A microcontroller is used to detects keypad presses, decode and send them to a computer, and send audio back into the phone. The decoded signals can be used with IVR software and other phone systems.
@@ -159,6 +160,31 @@ On the top half of the image is a graph showing the voltages at different points
 
 The circuit was tested in real life on a breadboard, replacing the 5V part with the 12V from the power supply and the circuit worked just fine. The microcontroller was able to output a 500Hz PWM signal into the circuit, the circuit superimposed the signal onto the 12V line going into the phone and the phone was able to isolate the AC signal and send it to the speaker in the handset, resulting in an audible 500Hz tone when you put the handset speaker to your ear.
 
+### Writing the IVR software <a name="ivr-software"/>
+Once the AC superimposing circuit was tested, work began on writing code for the ESP32 to allow it to receive commands from a Python script that acts as IVR software. IVR stands for Interactive Voice Response and is the system used for automating phone systems between businesses and customers. Instead of being directed to a person, a customer is directed to a robotic menu that reads out options and listens for button presses.
+
+Getting the phone to work with a computer requires this kind of software, so I wrote a Python script that can read the ESP32's output from the serial port, and send a sequence of tones back to the ESP32 which can be sent to the handset. This way you can dial a number, have the script detect it and play back a nice sounding sequence of tones into your ear. You can also dial a number and have it open a website.
+
+Each tone sequence follows the format `[(frequency, durationMillis),...]`. So a sequence consisting of `[(500,100),(750,250)]` would play a 500Hz tone for 100ms, immediately followed by a 750Hz tone for 250ms.  
+The following tone sequences were chosen for playback:
+| Sequence | Description |
+| -------- | ----------- |
+| `[(950, 330), (1400, 330), (1800, 330)]` | Number doesn't exist|
+| `[(440, 100), (494, 100), (523, 200)]` | User has entered the IVR menu|
+| `[(440, 150), (660, 150), (880, 330)]` | IVR menu item is valid |
+| `[(950, 330), (1400, 330), (1800, 330)]` | IVR menu item is invalid |
+
+However I wasn't happy that you couldn't have the phone do what it was designed to do, which is to play audio messages, so I added support for PCM file playback. Now you can send a PCM file with a voice message to the speaker of the phone rather than a bland tone sequence. The quality of the audio is abysmal when you hear it, but it's just good enough to make out words and understand what is being said.
+
+### Conclusion <a name="conclusion1"/>
+With the ESP32 code and the Python script, phone numbers and IVR systems can be created that allow the Vanguard to do many things. Such things involve opening websites, opening programs, sending emails, sending messages etc etc
+
+Schematic
+![Telephone Exchange Schematic](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/telephone_exchange_schematic_v1.png)
+
+Breadbord implementation
+![Breadboard Circuit](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/breadboard_circuit_v1.jpg)
+
 # Designing my own telephone exchange circuit (Version 2) <a name="design2"/>
 ### The plan <a name="the-plan-2">
 I decided to revisit this project a year later, and man was I stupid a year ago. I'll skip all the theory since its the same. I wanted to design a new circuit that wasn't as awful as the first. I fried the ESP32 a while back, so I bought a Raspberry Pi Pico for a fraction of the price and used for the new circuit.
@@ -252,34 +278,9 @@ The pink line is the 3.3V PWM signal. The green line is the optocoupler's output
 
 Testing of the optocoupler circuit showed it working perfectly. PWM signals from the Pico were being turned into superimposed signals on the phone's 12V input which were being isolated by the phone and sent to the handset speaker, making them audible when you put the handset to your ear. With some simple coding I was able to play the UK national anthem on the handset speaker by changing the frequency of the Pico's PWM output.
 
-# Writing the IVR software <a name="ivr-software"/>
-Once the AC superimposing circuit was tested, work began on writing code for the ESP32 to allow it to receive commands from a Python script that acts as IVR software. IVR stands for Interactive Voice Response and is the system used for automating phone systems between businesses and customers. Instead of being directed to a person, a customer is directed to a robotic menu that reads out options and listens for button presses.
-
-Getting the phone to work with a computer requires this kind of software, so I wrote a Python script that can read the ESP32's output from the serial port, and send a sequence of tones back to the ESP32 which can be sent to the handset. This way you can dial a number, have the script detect it and play back a nice sounding sequence of tones into your ear. You can also dial a number and have it open a website.
-
-Each tone sequence follows the format `[(frequency, durationMillis),...]`. So a sequence consisting of `[(500,100),(750,250)]` would play a 500Hz tone for 100ms, immediately followed by a 750Hz tone for 250ms.  
-The following tone sequences were chosen for playback:
-| Sequence | Description |
-| -------- | ----------- |
-| `[(950, 330), (1400, 330), (1800, 330)]` | Number doesn't exist|
-| `[(440, 100), (494, 100), (523, 200)]` | User has entered the IVR menu|
-| `[(440, 150), (660, 150), (880, 330)]` | IVR menu item is valid |
-| `[(950, 330), (1400, 330), (1800, 330)]` | IVR menu item is invalid |
-
-However I wasn't happy that you couldn't have the phone do what it was designed to do, which is to play audio messages, so I added support for PCM file playback. Now you can send a PCM file with a voice message to the speaker of the phone rather than a bland tone sequence. The quality of the audio is abysmal when you hear it, but it's just good enough to make out words and understand what is being said.
-
-# Conclusion <a name="conclusion"/>
+### Conclusion <a name="conclusion2"/>
 With the ESP32 code and the Python script, phone numbers and IVR systems can be created that allow the Vanguard to do many things. Such things involve opening websites, opening programs, sending emails, sending messages etc etc
 
-# Full circuit <a name="full-circuit"/>
-### Version 1 (outdated, don't use)
-Schematic
-![Telephone Exchange Schematic](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/telephone_exchange_schematic_v1.png)
-
-Breadbord implementation
-![Breadboard Circuit](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/breadboard_circuit_v1.jpg)
-
-### Version 2 (latest version, use this instead)
 Schematic  
 ![Telephone Exchange Schematic](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/telephone_exchange_schematic_v2.png)
 
