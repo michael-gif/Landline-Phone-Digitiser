@@ -187,7 +187,7 @@ Breadbord implementation
 
 # Designing my own telephone exchange circuit (Version 2) <a name="design2"/>
 ### The plan <a name="the-plan-2">
-I decided to revisit this project a year later, and man was I stupid a year ago. I'll skip all the theory since its the same. I wanted to design a new circuit that wasn't as awful as the first. I fried the ESP32 a while back, so I bought a Raspberry Pi Pico for a fraction of the price and used for the new circuit.
+I decided to revisit this project a year later, and man was I stupid a year ago. I'll skip all the theory since its the same. I wanted to design a new circuit that wasn't as awful as the first. I fried the ESP32 a while back, so I bought a Raspberry Pi Pico for a fraction of the price and used it for the new circuit.
 
 There are 3 goals for the new circuit:
 - Detect when the phone is off the hook
