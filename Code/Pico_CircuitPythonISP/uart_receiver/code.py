@@ -1,5 +1,6 @@
 import board
 import busio
+import struct
 
 PIN_TX = board.GP16
 PIN_RX = board.GP17
@@ -25,8 +26,10 @@ while True:
                 # read the bytes two at a time and turn them back into numbers
                 for i in range(0, len(buffer), 2):
                     print(int.from_bytes(buffer[i:i+2], byteorder='little'), end="")
+                    #print(struct.unpack('f', buffer[i:i+4]), end="")
                     print(',', end="")
                 print()
+#                print(buffer)
             buffer = b''
         else:
             buffer += data

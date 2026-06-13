@@ -10,109 +10,149 @@
 
 int phoneState = MODE_DTMF_DETECT;
 
-String getKeypadButtonPressed(int freq1, int freq2) {
+int getKeypadButtonPressed(int freq1, int freq2) {
   switch (freq1 + freq2) {
     case 1906:
-      return "1";
+      return 1;
     case 2033:
-      return "2";
+      return 2;
     case 2174:
-      return "3";
+      return 3;
     case 1979:
-      return "4";
+      return 4;
     case 2106:
-      return "5";
+      return 5;
     case 2247:
-      return "6";
+      return 6;
     case 2061:
-      return "7";
+      return 7;
     case 2188:
-      return "8";
+      return 8;
     case 2329:
-      return "9";
+      return 9;
     case 2277:
-      return "0";
+      return 0;
     case 2150:
-      return "*";
+      return 10; // *
     case 2418:
-      return "#";
+      return 11; // #
     default:
-      return "?";
+      return 12; // unknown
   }
 }
 
-int goertzelMagnitude(const float* samples, int num_samples, float target_freq, float sample_rate) {
-    float k = 0.5f + ((num_samples * target_freq) / sample_rate);
-    int bin = (int)k;
-    float omega = (2.0f * M_PI * bin) / num_samples;
-    float sine = sinf(omega);
-    float cosine = cosf(omega);
-    float coeff = 2.0f * cosine;
+int goertzelMagnitude(const int* samples, int num_samples, int target_freq, int sample_rate) {
+  float k = 0.5f + (((float)num_samples * target_freq) / sample_rate);
+  int bin = (int)k;
+  float omega = (2.0f * M_PI * bin) / num_samples;
+  float sine = sinf(omega);
+  float cosine = cosf(omega);
+  float coeff = 2.0f * cosine;
 
-    float q0 = 0, q1 = 0, q2 = 0;
-    for (int i = 0; i < num_samples; i++) {
-        q0 = coeff * q1 - q2 + samples[i];
-        q2 = q1;
-        q1 = q0;
-    }
+  float q0 = 0, q1 = 0, q2 = 0;
+  for (int i = 0; i < num_samples; i++) {
+    q0 = coeff * q1 - q2 + samples[i];
+    q2 = q1;
+    q1 = q0;
+  }
 
-    float real = (q1 - q2 * cosine);
-    float imag = (q2 * sine);
-    return sqrt(real * real + imag * imag) * 10;
+  float real = (q1 - q2 * cosine);
+  float imag = (q2 * sine);
+  return real * real + imag * imag;
+}
+
+float coeffs[7] = {
+  1.7154572,
+  1.6629392,
+  1.5460207,
+  1.4819024,
+  1.1913984,
+  1.0282056,
+  0.7653668
+};
+int goertzelMagnitudeFast(const int* samples, int num_samples, int freqIndex) {
+  float coeff = coeffs[freqIndex];
+  float q0 = 0, q1 = 0, q2 = 0;
+  for (int i = 0; i < num_samples; i++) {
+    q0 = coeff * q1 - q2 + samples[i];
+    q2 = q1;
+    q1 = q0;
+  }
+  return q1*q1 + q2*q2 - q1*q2*coeff;
+}
+
+uint32_t coeffsFP[7] = {
+  28106,
+  27245,
+  25330,
+  24279,
+  19519,
+  16846,
+  12539
+};
+int goertzelMagnitudeFastFP(const int* samples, int num_samples, int freqIndex) {
+  uint32_t coeff = coeffsFP[freqIndex];
+  uint32_t q0 = 0, q1 = 0, q2 = 0;
+  for (int i = 0; i < num_samples; i++) {
+    q0 = ((coeff * q1)>>14) - q2 + samples[i];
+    q2 = q1;
+    q1 = q0;
+  }
+  return (q1*q1 + q2*q2 - ((q1*q2*coeff)>>14))>>14;
 }
 
 const int FFT_SAMPLE_COUNT = 128;
-float fft_input[FFT_SAMPLE_COUNT];
-const float dtmfFreqs[7] = {697, 770, 852, 941, 1209, 1336, 1477};
+int fft_input[FFT_SAMPLE_COUNT];
+const int dtmfFreqs[7] = {697, 770, 852, 941, 1209, 1336, 1477};
 bool toneStarted = false;
 int dtmf_freq1 = -1;
 int dtmf_freq2 = -1;
 int dtmf_mag1 = -1;
 int dtmf_mag2 = -1;
+unsigned long toneStart;
 void dtmfDetection() {
-  // sample the ADC 128 times at 8kHz
-  const int SAMPLE_RATE = 8000;
-  const uint32_t interval_us = 1000000.0 / SAMPLE_RATE;
+  // sample the ADC 128 times at ~8kHz
   for (int i = 0; i < FFT_SAMPLE_COUNT; i++) {
-    unsigned long start = micros();
     fft_input[i] = analogRead(PIN_DTMF_DETECT);
-    while (micros() - start < interval_us); // wait 125us without fucking with the adc interrupts
+    delayMicroseconds(122);
   }
 
   // fast fourier transform
-  //String res = "4096,";
+  String res = "4096,";
   int activeTones = 0;
   for (int i = 0; i < 7; i++) {
     int freq = dtmfFreqs[i];
-    int freq_mag = goertzelMagnitude(fft_input, FFT_SAMPLE_COUNT, freq, SAMPLE_RATE);
-    //res += (String)freq + ":" + (String)freq_mag + ",";
-    //continue;
-    if (freq_mag > 20000) { // anything above 20000 means we have a dtmf tone being played
+    int freq_mag = goertzelMagnitudeFast(fft_input, FFT_SAMPLE_COUNT, i);
+    res += (String)freq + ":" + (String)freq_mag + ",";
+    continue;
+    if (freq_mag > 4000) { // anything above 4000 means we have a dtmf tone being played
       activeTones++;
-      toneStarted = true;
+      if (!toneStarted) {
+        toneStarted = true;
+        toneStart = millis();
+      }
 
       // update the two highest frequencies by tracking the 2 highest magnitudes
-      if (freq_mag > 20000) {
-        if (freq_mag >= dtmf_mag1) {
-          dtmf_mag1 = freq_mag;
-          dtmf_freq1 = freq;
-        } else if (freq != dtmf_freq1 && freq_mag >= dtmf_mag2) {
-          dtmf_mag2 = freq_mag;
-          dtmf_freq2 = freq;
-        }
+      if (freq_mag >= dtmf_mag1) {
+        dtmf_mag1 = freq_mag;
+        dtmf_freq1 = freq;
+      } else if (freq != dtmf_freq1 && freq_mag >= dtmf_mag2) {
+        dtmf_mag2 = freq_mag;
+        dtmf_freq2 = freq;
       }
     }
   }
-  //Serial.println(res + "0");
-  //return;
+  Serial.println(res + "0");
+  return;
 
 
   // dtmf decoding
   if (toneStarted && activeTones == 0) {
     toneStarted = false;
-    //Serial.println((String)dtmf_freq1 + "," + (String)dtmf_freq2);
-    String button = getKeypadButtonPressed(dtmf_freq1, dtmf_freq2);
-    if (button != "?")
+    unsigned long toneDuration = millis() - toneStart;
+    if (toneDuration < 100) return;
+    int button = getKeypadButtonPressed(dtmf_freq1, dtmf_freq2);
+    if (button != 12)
       Serial.println(button);
     // if (button == "#") {
     //   delay(1000);
@@ -129,7 +169,9 @@ void dtmfDetection() {
 
 bool phoneHookState = true; // true means the phone is on the hook
 void checkHookState() {
-  bool currentState = analogRead(PIN_HOOK_DETECT) < 500;
+  //Serial.println(analogRead(PIN_HOOK_DETECT));
+  //return;
+  bool currentState = analogRead(PIN_HOOK_DETECT) < 128;
   if (currentState != phoneHookState) {
     digitalWrite(PIN_HOOK_STATUS, currentState ? LOW : HIGH);
     delay(50); // de-bounce (50ms)
@@ -283,22 +325,13 @@ void setup() {
   pinMode(PIN_DAC_OUTPUT, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
-  analogReadResolution(12);
+  analogReadResolution(10);
   analogWriteRange(2048);
 
   Serial.begin(921600);
 
   digitalWrite(LED_BUILTIN, HIGH);
   digitalWrite(PIN_HOOK_STATUS, LOW);
-  //if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
-  //  Serial.println("Woke from deep sleep (Phone off hook)");
-  //}
-
-  // send the mcu into deep sleep
-  // when you take the phone off the hook, the mcu will wake up and this sleep code won't run
-  //if (analogRead(PIN_HOOK_DETECT) < 128) {
-  //  goToSleep();
-  //}
 }
 
 void loop() {

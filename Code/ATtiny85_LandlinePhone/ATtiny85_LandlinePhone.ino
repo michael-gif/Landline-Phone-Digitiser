@@ -15,26 +15,56 @@
 #define PIN_DTMF_DETECT PB4
 #define PIN_HOOK_STATUS PB2
 
-float samplesOverSampleRate = 0.016f;
-float twoPI = 2 * M_PI;
-int goertzelMagnitude(const int* samples, uint8_t num_samples, int target_freq, float sample_rate) {
-    float k = 0.5f + (samplesOverSampleRate * target_freq);
-    int bin = (int)k;
-    float omega = (twoPI * bin) / num_samples;
-    float sine = sinf(omega);
-    float cosine = cosf(omega);
-    float coeff = 2.0f * cosine;
+// float omegas[7] = {
+//   0.539961,
+//   0.589049,
+//   0.687223,
+//   0.736311,
+//   0.93266,
+//   1.03084,
+//   1.1781
+// };
 
-    float q0 = 0, q1 = 0, q2 = 0;
-    for (uint8_t i = 0; i < num_samples; i++) {
-        q0 = coeff * q1 - q2 + samples[i];
-        q2 = q1;
-        q1 = q0;
-    }
+// for some reason, voltaile lets you do 2 iterations of fft instead of 1
+// float sines[7] = {
+//   0.5141028f,
+//   0.5555702f,
+//   0.6343934f,
+//   0.671559f,
+//   0.8032074f,
+//   0.8577286f,
+//   0.9238794f
+// };
 
-    float real = (q1 - q2 * cosine);
-    float imag = (q2 * sine);
-    return sqrt(real * real + imag * imag) * 10;
+// volatile const float cosines[7] = {
+//   0.8577286,
+//   0.8314696,
+//   0.7730104,
+//   0.7409512,
+//   0.5956992,
+//   0.5141028,
+//   0.3826834
+// };
+int goertzelMagnitude(const int* samples, uint8_t num_samples, int target_freq) {
+  //float k = 0.5f + (((float)num_samples * target_freq) / 8000);
+  //int bin = (int)k;
+  //float omega = (2.0f * M_PI * bin) / num_samples;
+  float omega = (2.0f * M_PI * target_freq) / 8000;
+  float sine = sin(omega);
+  float cosine = cos(omega);
+  float coeff = 2.0f * cosine;
+
+  float q0 = 0, q1 = 0, q2 = 0;
+  for (uint8_t i = 0; i < num_samples; i++) {
+    q0 = coeff * q1 - q2 + samples[i];
+    q2 = q1;
+    q1 = q0;
+  }
+
+  //float real = (q0 - q2 * cosine);
+  //float imag = (q2 * sine);
+  //return sqrt(real * real + imag * imag) * 10;
+  return sqrt(q1*q1 + q2*q2 - coeff*q1*q2);
 }
 
 const uint8_t FFT_SAMPLE_COUNT = 128;
@@ -46,8 +76,7 @@ int dtmf_freq2 = -1;
 int dtmf_mag1 = -1;
 int dtmf_mag2 = -1;
 void dtmfDetection() {
-  // sample the ADC 128 times at 8kHz
-  const int SAMPLE_RATE = 8000;
+  // sample the ADC 128 times at ~8kHz
   for (int i = 0; i < FFT_SAMPLE_COUNT; i++) {
     fft_input[i] = _analogRead(PIN_DTMF_DETECT);
     _delay_us(125);
@@ -58,7 +87,7 @@ void dtmfDetection() {
   int activeTones = 0;
   for (uint8_t i = 0; i < 7; i++) {
     int freq = dtmfFreqs[i];
-    int freq_mag = goertzelMagnitude(fft_input, FFT_SAMPLE_COUNT, freq, SAMPLE_RATE);
+    int freq_mag = goertzelMagnitude(fft_input, FFT_SAMPLE_COUNT, freq);
     Serial.write((byte*)&freq_mag, 2);
   }
   Serial.write(">");
@@ -66,10 +95,6 @@ void dtmfDetection() {
 
 bool phoneHookState = true; // true means the phone is on the hook
 void checkHookState() {
-  // Serial.write("<");
-  // Serial.write(_analogRead(PIN_HOOK_DETECT));
-  // Serial.write(">");
-  // return;
   bool currentState = _analogRead(PIN_HOOK_DETECT) < 128;
   if (currentState != phoneHookState) {
     _digitalWrite(PIN_HOOK_STATUS, currentState ? LOW : HIGH);
