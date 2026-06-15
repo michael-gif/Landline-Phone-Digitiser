@@ -41,7 +41,7 @@ uint32_t goertzelMagnitude(const int* samples, uint8_t num_samples, uint8_t freq
     q2 = q1;
     q1 = q0;
   }
-  float mag = q1*q1 + q2*q2 - q1*q2*coeff;
+  float mag = sqrt(q1*q1 + q2*q2 - q1*q2*coeff);
   return mag;
 }
 
@@ -58,45 +58,45 @@ void dtmfDetection() {
   // sample the ADC 128 times at ~8kHz
   for (int i = 0; i < FFT_SAMPLE_COUNT; i++) {
     fft_input[i] = _analogRead(PIN_DTMF_DETECT);
-    //_delay_us(125);
-    switch(dtmfDelay) {
-      case 120:
-        _delay_us(120);
-        break;
-      case 121:
-        _delay_us(121);
-        break;
-      case 122:
-        _delay_us(122);
-        break;
-      case 123:
-        _delay_us(123);
-        break;
-      case 124:
-        _delay_us(124);
-        break;
-      case 125:
-        _delay_us(125);
-        break;
-      case 126:
-        _delay_us(126);
-        break;
-      case 127:
-        _delay_us(127);
-        break;
-      case 128:
-        _delay_us(128);
-        break;
-      case 129:
-        _delay_us(129);
-        break;
-      case 130:
-        _delay_us(130);
-        break;
-      default:
-        _delay_us(125);
-        break;
-    }
+    _delay_us(122);
+    // switch(dtmfDelay) {
+    //   case 120:
+    //     _delay_us(120);
+    //     break;
+    //   case 121:
+    //     _delay_us(121);
+    //     break;
+    //   case 122:
+    //     _delay_us(122);
+    //     break;
+    //   case 123:
+    //     _delay_us(123);
+    //     break;
+    //   case 124:
+    //     _delay_us(124);
+    //     break;
+    //   case 125:
+    //     _delay_us(125);
+    //     break;
+    //   case 126:
+    //     _delay_us(126);
+    //     break;
+    //   case 127:
+    //     _delay_us(127);
+    //     break;
+    //   case 128:
+    //     _delay_us(128);
+    //     break;
+    //   case 129:
+    //     _delay_us(129);
+    //     break;
+    //   case 130:
+    //     _delay_us(130);
+    //     break;
+    //   default:
+    //     _delay_us(125);
+    //     break;
+    // }
   }
 
   // fast fourier transform
@@ -105,9 +105,9 @@ void dtmfDetection() {
   int activeTones = 0;
   for (uint8_t i = 0; i < 7; i++) {
     uint32_t mag = goertzelMagnitude(fft_input, FFT_SAMPLE_COUNT, i);
-    Serial.write((byte*)&mag, 4);
+    Serial.write((byte*)&mag, 2);
     continue;
-    if (mag > 2048) { // anything above 2048 means we have a dtmf tone being played
+    if (mag > 100) { // anything above 2048 means we have a dtmf tone being played
       activeTones++;
       toneStarted = true;
 
@@ -129,10 +129,10 @@ void dtmfDetection() {
     toneStarted = false;
     Serial.write("<");
     Serial.write((byte)2);
-    Serial.write((byte*)&dtmf_freq1, 4);
-    Serial.write((byte*)&dtmf_mag1, 4);
-    Serial.write((byte*)&dtmf_freq2, 4);
-    Serial.write((byte*)&dtmf_mag2, 4);
+    Serial.write((byte*)&dtmf_freq1, 2);
+    Serial.write((byte*)&dtmf_mag1, 2);
+    Serial.write((byte*)&dtmf_freq2, 2);
+    Serial.write((byte*)&dtmf_mag2, 2);
     Serial.write(">");
     dtmf_freq1 = 0;
     dtmf_freq2 = 0;

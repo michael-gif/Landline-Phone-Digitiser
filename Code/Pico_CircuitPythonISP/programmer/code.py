@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
-# SPDX-License-Identifier: MIT
-
 """
 Trinket/Gemma (ATtiny85) programming example, be sure you have the '85 wired up so:
   Pin 8 (VCC) -> Pico 3.3V
@@ -14,7 +11,6 @@ Trinket/Gemma (ATtiny85) programming example, be sure you have the '85 wired up 
 import board
 import busio
 import os
-
 import adafruit_avrprog
 
 # ----- PICO GPIO PINS -----
@@ -48,8 +44,15 @@ if not avrprog.verify_sig(attiny85, verbose=True):
     error("Signature read failure")
 print("Found", attiny85["name"])
 
-avrprog.write_fuses(attiny85, low=0xE2, high=0xD5, ext=0x06, lock=0x3F)
-if not avrprog.verify_fuses(attiny85, low=0xE2, high=0xD5, ext=0x06, lock=0x3F):
+low = 0xE2
+high = 0xD5
+ext = 0xFF
+lock = 0xFF
+print('Target fuses: ' +','.join(hex(fuse) for fuse in [low, high, ext, lock]))
+print('Fuses before: ' + ','.join(hex(fuse) for fuse in avrprog.read_fuses(attiny85)))
+avrprog.write_fuses(attiny85, low=low, high=high, ext=ext, lock=lock)
+print('Fuses after: ' + ','.join(hex(fuse) for fuse in avrprog.read_fuses(attiny85)))
+if not avrprog.verify_fuses(attiny85, low=low, high=high, ext=ext, lock=lock):
     error("Failure verifying fuses!")
 
 print("Programming flash from file")

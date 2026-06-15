@@ -28,15 +28,17 @@ while True:
             else:
                 # read the bytes a chunk at a time and turn them back into numbers
                 buffer = buffer[1:]
-                chunk_size = 4
+                chunk_size = 2
                 freqs = [697, 770, 852, 941, 1209, 1336, 1477]
+                freqIndex = 0;
                 for i in range(0, len(buffer), chunk_size):
                     val = int.from_bytes(buffer[i:i+chunk_size], byteorder='little')
 #                    if val < 8 and (i == 0 or i == 8):
 #                        print(f'F:{freqs[val]}', end=',')
 #                    else:
 #                        print(f'M:{val}', end=',')
-                    print(f'{val}', end=',')
+                    print(f'{freqs[freqIndex]}:{val}', end=',')
+                    freqIndex += 1
                 print()
             buffer = b''
         else:
