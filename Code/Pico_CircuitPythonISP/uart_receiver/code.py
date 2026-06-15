@@ -18,18 +18,26 @@ while True:
     else:
         if data == b'>':
             in_message = False
-            if buffer == b'\x0A':
-                print('ON_HOOK')
-            elif buffer == b'\x0B':
-                print('OFF_HOOK')
+            if buffer[0] == 0:
+                if buffer[1] == 10:
+                    print('ON_HOOK')
+                elif buffer[1] == 11:
+                    print('OFF_HOOK')
+            elif buffer[0] == 1:
+                print(f'New Delay: {buffer[1]}us')
             else:
-                # read the bytes two at a time and turn them back into numbers
-                for i in range(0, len(buffer), 2):
-                    print(int.from_bytes(buffer[i:i+2], byteorder='little'), end="")
-                    #print(struct.unpack('f', buffer[i:i+4]), end="")
-                    print(',', end="")
+                # read the bytes a chunk at a time and turn them back into numbers
+                buffer = buffer[1:]
+                chunk_size = 4
+                freqs = [697, 770, 852, 941, 1209, 1336, 1477]
+                for i in range(0, len(buffer), chunk_size):
+                    val = int.from_bytes(buffer[i:i+chunk_size], byteorder='little')
+#                    if val < 8 and (i == 0 or i == 8):
+#                        print(f'F:{freqs[val]}', end=',')
+#                    else:
+#                        print(f'M:{val}', end=',')
+                    print(f'{val}', end=',')
                 print()
-#                print(buffer)
             buffer = b''
         else:
             buffer += data

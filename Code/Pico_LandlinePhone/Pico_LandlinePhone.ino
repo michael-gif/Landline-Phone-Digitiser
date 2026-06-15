@@ -81,26 +81,6 @@ int goertzelMagnitudeFast(const int* samples, int num_samples, int freqIndex) {
   return q1*q1 + q2*q2 - q1*q2*coeff;
 }
 
-uint32_t coeffsFP[7] = {
-  28106,
-  27245,
-  25330,
-  24279,
-  19519,
-  16846,
-  12539
-};
-int goertzelMagnitudeFastFP(const int* samples, int num_samples, int freqIndex) {
-  uint32_t coeff = coeffsFP[freqIndex];
-  uint32_t q0 = 0, q1 = 0, q2 = 0;
-  for (int i = 0; i < num_samples; i++) {
-    q0 = ((coeff * q1)>>14) - q2 + samples[i];
-    q2 = q1;
-    q1 = q0;
-  }
-  return (q1*q1 + q2*q2 - ((q1*q2*coeff)>>14))>>14;
-}
-
 const int FFT_SAMPLE_COUNT = 128;
 int fft_input[FFT_SAMPLE_COUNT];
 const int dtmfFreqs[7] = {697, 770, 852, 941, 1209, 1336, 1477};

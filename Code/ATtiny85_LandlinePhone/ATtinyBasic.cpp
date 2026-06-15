@@ -1,11 +1,20 @@
 #include "ATtinyBasic.h"
 #include <avr/io.h>
 
+#define _NOP() do { __asm__ volatile ("nop"); } while (0)
+
 void _pinMode(uint8_t pin, uint8_t direction) {
-  if (direction) {
-    DDRB |= (1 << pin);
-  } else {
-    DDRB |= ~(1 << pin);
+  if (direction == 1) {
+    DDRB |= (1 << pin);   // set pin as output
+    PORTB &= ~(1 << pin); // deactivate pull-up resistor
+  }
+  else if (direction == 0) {
+    DDRB &= ~(1 << pin); // set pin as input
+    PORTB &= ~(1 << pin); // deactivate pull-up resistor
+  }
+  else if (direction == 2) {
+    DDRB &= ~(1 << pin); // set pin as input
+    PORTB |= (1 << pin); // activate pull-up resistor
   }
 }
 
@@ -15,6 +24,12 @@ void _digitalWrite(uint8_t pin, uint8_t value) {
   } else {
     PORTB &= ~(1 << pin);
   }
+}
+
+uint8_t _digitalRead(uint8_t pin) {
+  uint8_t val = PINB & (1 << pin);
+  _NOP(); // for synchronization according to the datasheet
+  return val;
 }
 
 void _adcSetup() {
