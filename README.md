@@ -281,10 +281,11 @@ Testing of the optocoupler circuit showed it working perfectly. PWM signals from
 ### Conclusion <a name="conclusion2"/>
 With the Pico code and a Python script, phone numbers and IVR systems can be created that allow the Vanguard to do many things. Such things involve opening websites, opening programs, sending emails, sending messages etc etc
 
-Schematic  
+Schematic using an Attiny85  
 ![Telephone Exchange Schematic](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/Schematics/telephone_exchange_schematic_v2.png)
 
-Breadboard implementation  
+Breadboard implementation using a Pico  
+(The Pico is easier because it does the MCU, Linear Power Supply and USB-Serial stuff all in one)  
 ![Breadboard Circuit](https://github.com/michael-gif/Landline-Phone-Digitiser/blob/main/Resources/breadboard_circuit_v2.jpg)
 
 # TODO
